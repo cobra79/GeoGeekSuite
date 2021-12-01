@@ -1,0 +1,17 @@
+gisnamespace: gis
+geodatabase:
+  dbname: postgres
+  dbadmin: postgres
+  dbpw: '{{ password }}'
+  dbpwe: '{{ password | b64encode }}'
+  container_image: postgis/postgis # postgres
+  container_version: 13-3.1-alpine  # 10.4
+  pgadmin:
+    container_image: dpage/pgadmin4
+    container_version: '4.30'
+    mail: '{{ mail }}'
+    pw: '{{ password | b64encode }}'
+jupyter:
+  container_image: jupyter/minimal-notebook
+  pw: '{{ password }}'
+

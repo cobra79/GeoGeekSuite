@@ -1,0 +1,24 @@
+---
+# tasks file for ingress
+- name: Render Ingress Definition
+  template:
+    src: ingress_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/ingress_deployment.yaml'
+- name: Render Ingress Definition
+  template:
+    src: ingress_controller.j2.yaml
+    dest: '{{ manifest_folder }}/ingress_controller.yaml'
+- name: Create Ingress ingress_controller
+  shell:
+    cmd: 'kubectl create -f ingress_controller.yaml'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Remove Existing
+  shell:
+    cmd: 'kubectl delete -f ingress_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Create Ingress Deployment
+  shell:
+    cmd: 'kubectl create -f ingress_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'

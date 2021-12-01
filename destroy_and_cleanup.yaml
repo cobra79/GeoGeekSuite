@@ -1,0 +1,27 @@
+---
+- hosts: local
+  vars_files:
+  - ./credentials.yaml
+  - ./environment.yaml
+  - ./global_defaults.yaml
+  tasks:
+  - name: Delete Namesapce
+    shell:
+        cmd: 'kubectl delete namespace {{ item }}'
+    with_items: ['{{ gisnamespace }}']
+    ignore_errors: true
+  - name: Delete Volumes
+    shell:
+      cmd: 'kubectl delete pv {{ item }}-volume'
+    with_items: ['{{ storage.postgres.name }}','{{ storage.pgadmin.name }}','{{ storage.jupyter.name }}']
+    ignore_errors: true
+  - name: Delete folders
+    file:
+      path: '{{ item }}'
+      state: absent
+    with_items: ['{{ storage.postgres.path }}','{{ storage.pgadmin.path }}','{{ storage.jupyter.path }}/.cache','{{ storage.jupyter.path }}/.ipynb_checkpoints','{{ storage.jupyter.path }}/.ipython','{{ storage.jupyter.path }}/.jupyter','{{ storage.jupyter.path }}/.local','{{ storage.jupyter.path }}/.wget-hsts']
+  - name: Recreate folders
+    file:
+      path: '{{ item }}'
+      state: directory
+    with_items: ['{{ storage.postgres.path }}','{{ storage.pgadmin.path }}']

@@ -1,0 +1,4 @@
+---
+# tasks file for kube
+- name: Namespace
+  import_tasks: setup_namespace.yaml

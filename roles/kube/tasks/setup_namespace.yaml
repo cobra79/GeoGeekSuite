@@ -1,0 +1,15 @@
+---
+- name: Ensure manifest folder exists
+  file:
+    path: '{{ manifest_folder }}'
+    state: directory
+- name: Render GIS Namespaces definition
+  template:
+    src: gisnamespace.j2.yaml
+    dest: '{{ manifest_folder }}/gisnamespace.yaml'
+- name: Create GIS  Namespace
+  shell:
+    cmd: 'kubectl create -f gisnamespace.yaml'
+    chdir: '{{ manifest_folder }}'
+  #will fail if namespace already exits
+  ignore_errors: true

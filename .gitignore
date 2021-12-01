@@ -127,3 +127,24 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ansible Stuff
+inventory.yaml
+environment.yaml
+credentials.yaml
+
+# Local
+.gitignore
+/install_k8s
+todo.md
+/data/*
+!/data/jupyter
+/data/jupyter/.ipython/
+/data/jupyter/.jupyter/
+/data/jupyter/.local/
+/data/jupyter/.wget-hsts
+/data/jupyter/*
+!/data/jupyter/*.ipynb
+/manifests
+
+.DS_Store

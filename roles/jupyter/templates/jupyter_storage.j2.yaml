@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: '{{ storage.jupyter.name }}-volume'
+  labels:
+    type: '{{ storage.jupyter.type }}'
+spec:
+  storageClassName: manual
+  capacity:
+    storage: '{{ storage.jupyter.size }}'
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: '{{ storage.jupyter.path }}'
+  claimRef:
+    name: '{{ storage.jupyter.name }}-claim'
+    namespace: '{{ gisnamespace }}'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: '{{ storage.jupyter.name }}-claim'
+spec:
+  storageClassName: manual
+  volumeName: '{{ storage.jupyter.name }}-volume'
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: '{{ storage.jupyter.size }}'

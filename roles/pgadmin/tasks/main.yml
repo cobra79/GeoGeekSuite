@@ -1,0 +1,47 @@
+---
+# tasks file for pgadmin
+- name: Render PG Admin CM
+  template:
+    src: pgadmin_configmap.j2.yaml
+    dest: '{{ manifest_folder }}/pgadmin_configmap.yaml'
+- name: Create Pgadmin CM
+  shell:
+    cmd: 'kubectl create -f pgadmin_configmap.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render PG Admin Secret
+  template:
+    src: pgadmin_secret.j2.yaml
+    dest: '{{ manifest_folder }}/pgadmin_secret.yaml'
+- name: Create Pgadmin Secret
+  shell:
+    cmd: 'kubectl create -f pgadmin_secret.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render PG Admin Volume
+  template:
+    src: pgadmin_volume.j2.yaml
+    dest: '{{ manifest_folder }}/pgadmin_volume.yaml'
+- name: Create Pgadmin Volume
+  shell:
+    cmd: 'kubectl create -f pgadmin_volume.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render PG Admin manifest
+  template:
+    src: pgadmin_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/pgadmin_deployment.yaml'
+- name: Create Pgadmin
+  shell:
+    cmd: 'kubectl create -f pgadmin_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render PG Admin Service manifest
+  template:
+    src: pgadmin_service.j2.yaml
+    dest: '{{ manifest_folder }}/pgadmin_service.yaml'
+- name: Create Pgadmin
+  shell:
+    cmd: 'kubectl create -f pgadmin_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true

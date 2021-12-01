@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: '{{ storage.pgadmin.name }}-volume'
+  labels:
+    type: '{{ storage.pgadmin.type }}'
+spec:
+  storageClassName: manual
+  capacity:
+    storage: '{{ storage.pgadmin.size }}'
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: '{{ storage.pgadmin.path }}'
+  claimRef:
+    name: '{{ storage.pgadmin.name }}-claim'
+    namespace: '{{ gisnamespace }}'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: '{{ storage.pgadmin.name }}-claim'
+spec:
+  storageClassName: manual
+  volumeName: '{{ storage.pgadmin.name }}-volume'
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: '{{ storage.pgadmin.size }}'

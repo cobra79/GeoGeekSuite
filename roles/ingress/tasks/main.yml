@@ -1,0 +1,4 @@
+---
+# tasks file for ingress
+- name: Ingress 
+  import_tasks: setup_ingress.yaml

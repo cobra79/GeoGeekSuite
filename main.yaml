@@ -1,0 +1,28 @@
+---
+- hosts: local
+  vars_files:
+  - ./credentials.yaml
+  - ./environment.yaml
+  - ./global_defaults.yaml
+  tasks:
+  - name: Scale Down
+    shell:
+        cmd: 'kubectl scale deployment {{ item }} --replicas=0 -n {{ gisnamespace }}'
+    with_items: ['postgres','pgadmin','jupyter']
+    tags: ['never','scaledown']
+  - name: Scale Up
+    shell:
+      cmd: 'kubectl scale deployment {{ item }} --replicas=1 -n {{ gisnamespace }}'
+    with_items: ['postgres','pgadmin','jupyter']
+    tags: ['never','scaleup']
+  roles:
+  - { role: kube,
+        tags: kube }
+  - { role: geodatabase,
+        tags: geodatabase }
+  - { role: pgadmin,
+        tags: pgadmin }
+  - { role: jupyter,
+        tags: jupyter }
+  - { role: ingress,
+       tags: ingress }

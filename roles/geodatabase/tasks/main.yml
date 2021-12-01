@@ -1,0 +1,53 @@
+---
+# tasks file for geodatabase
+- name: Ensure manifest folder exists
+  file:
+    path: '{{ manifest_folder }}'
+    state: directory
+- name: Render Postrgres Configmap
+  template:
+    src: postgres_configmap.j2.yaml
+    dest: '{{ manifest_folder }}/postgres_configmap.yaml'
+- name: Create Postgres Configmap
+  shell:
+    cmd: 'kubectl create -f postgres_configmap.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+  ##
+- name: Render Postrgres Secrets
+  template:
+    src: postgres_secrets.j2.yaml
+    dest: '{{ manifest_folder }}/postgres_secrets.yaml'
+- name: Create Postgres Secrets
+  shell:
+    cmd: 'kubectl create -f postgres_secrets.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+  ##
+- name: Render Postgres Storage Definition
+  template:
+    src: postgres_storage.j2.yaml
+    dest: '{{ manifest_folder }}/postgres_storage.yaml'
+- name: Create Storage
+  shell:
+    cmd: 'kubectl create -f postgres_storage.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render Postgres Deployment Manifest
+  template:
+    src: postgres_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/postgres_deployment.yaml'
+- name: Create Deployment
+  shell:
+     cmd: 'kubectl create -f postgres_deployment.yaml -n {{ gisnamespace }}'
+     chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render Postgres Service Definition
+  template:
+    src: postgres_service.j2.yaml
+    dest: '{{ manifest_folder }}/postgres_service.yaml'
+- name: Create Service
+  shell:
+    cmd: 'kubectl create -f postgres_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true

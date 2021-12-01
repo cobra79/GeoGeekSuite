@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: jupyter
+  template:
+    metadata:
+      labels:
+        app: jupyter
+    spec:
+      containers:
+        - name: jupyter
+          #image: jupyter/base-notebook
+          image: gisjupyter
+          env:
+          - name: JUPYTER_ENABLE_LAB
+            value: "yes"
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pg-secret
+                key: POSTGRES_PASSWORD
+          - name: PYTHONPATH
+            value: /opt/cobra-python-packages
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 8888
+          command: ["start-notebook.sh"]
+          args:
+            - '--NotebookApp.token={{ password }}'
+          #args: ["--NotebookApp.token=''"]
+          #envFrom:
+          #  - configMapRef:
+          #      name: postgres-config
+          volumeMounts:
+            - mountPath: /home/jovyan
+              name: jupyter
+      volumes:
+        - name: jupyter
+          persistentVolumeClaim:
+            claimName: jupyter-claim
