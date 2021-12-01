@@ -134,7 +134,6 @@ environment.yaml
 credentials.yaml
 
 # Local
-.gitignore
 /install_k8s
 todo.md
 /data/*
