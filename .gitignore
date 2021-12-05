@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/python/__pycache__
 lib64/
 parts/
 sdist/
@@ -145,5 +145,6 @@ todo.md
 /data/jupyter/*
 !/data/jupyter/*.ipynb
 /manifests
+/images
 
 .DS_Store

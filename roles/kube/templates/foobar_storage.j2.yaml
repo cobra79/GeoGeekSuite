@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: '{{ storage.foobar.name }}-volume'
+  labels:
+    type: '{{ storage.foobar.type }}'
+spec:
+  storageClassName: manual
+  capacity:
+    storage: '{{ storage.foobar.size }}'
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: '{{ storage.foobar.path }}'
+  claimRef:
+    name: '{{ storage.foobar.name }}-claim'
+    namespace: '{{ gisnamespace }}'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: '{{ storage.foobar.name }}-claim'
+spec:
+  storageClassName: manual
+  volumeName: '{{ storage.foobar.name }}-volume'
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: '{{ storage.foobar.size }}'

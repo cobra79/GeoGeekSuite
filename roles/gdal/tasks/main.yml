@@ -1,0 +1,39 @@
+---
+# tasks file for gdal
+- name: Create Image folder
+  file:
+    path: '{{ image_files }}/gdal'
+    state: directory
+- name: Render main.py
+  template:
+    src: main.j2.py
+    dest: '{{ image_files }}/gdal/main.py'
+- name: Render Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: '{{ image_files }}/gdal/Dockerfile'
+- name: Build Image
+  shell:
+    cmd: docker image build . -t gdal
+    chdir: '{{ image_files }}/gdal'
+- name: Render Deployment
+  template:
+    src: gdal_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/gdal_deployment.yaml'
+- name: Render Service 
+  template:
+    src: gdal_service.j2.yaml
+    dest: '{{ manifest_folder }}/gdal_service.yaml'
+- name: Apply Deployment 
+  shell:
+    cmd: 'kubectl create -f gdal_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Apply Service
+  shell:
+    cmd: 'kubectl create -f gdal_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+
+
+

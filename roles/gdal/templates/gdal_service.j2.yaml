@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gdal
+  labels:
+    app: gdal
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: gdal

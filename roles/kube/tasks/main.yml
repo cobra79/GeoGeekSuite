@@ -2,3 +2,13 @@
 # tasks file for kube
 - name: Namespace
   import_tasks: setup_namespace.yaml
+- name: Render Jupyter Storage Definition
+  template:
+    src:  foobar_storage.j2.yaml
+    dest: '{{ manifest_folder }}/foobar_storage.yaml'
+- name: Create FooBar Storage
+  shell:
+    cmd: 'kubectl create -f foobar_storage.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+
