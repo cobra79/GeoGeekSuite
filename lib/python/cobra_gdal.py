@@ -16,12 +16,12 @@ class cobra_gdal:
         return "cobra_gdal"
     def __str__(self):
         return "A wrapper for GDAL"
-    def shape2pg(self, path_to_shape, skip_failurs=True):
+    def shape2pg(self, path_to_shape, skip_failures=True):
         self.l.debug('shape2pg')     
         if os.path.isfile(path_to_shape) == False:
             self.l.error(f'File {path_to_shape} does not exist')
         command = f'ogr2ogr -f "PostgreSQL" PG:"{self.connection_string}" "{path_to_shape}"'
-        if skip_failurs:
+        if skip_failures:
             command = f'{command} -skip-failures'
         self.l.debug(f'ogr2ogr -f "PostgreSQL" PG:"..." "{path_to_shape}"')
         try:
