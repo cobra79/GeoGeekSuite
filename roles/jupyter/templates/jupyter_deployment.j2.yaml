@@ -15,7 +15,7 @@ spec:
       containers:
         - name: jupyter
           #image: jupyter/base-notebook
-          image: gisjupyter
+          image: localhost:32000/gisjupyter:0.0.1
           env:
           - name: JUPYTER_ENABLE_LAB
             value: "yes"
@@ -41,18 +41,13 @@ spec:
           volumeMounts:
             - mountPath: /home/jovyan
               name: jupyter
-            - mountPath: /home/jovyan/temp_download
-              name: download
             - mountPath: /opt/cobra-python-packages
               name: devlibs
       volumes:
         - name: jupyter
           persistentVolumeClaim:
             claimName: jupyter-claim
-        - name: download
-          persistentVolumeClaim:
-            claimName: download-claim
         - name: devlibs
           hostPath:
-            path: {{ local_lib_path }}/python
+            path: '{{ local_lib_path }}/python'
             type: DirectoryOrCreate

@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-myservicea
@@ -11,11 +11,15 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: jupyter
-          servicePort: 8888
+          service:
+            name: jupyter
+            port:
+              number: 8888
+
 ---
-#apiVersion: networking.k8s.io/v1beta1
+#apiVersion: networking.k8s.io/v1
 #kind: Ingress
 #metadata:
 #  name: ingress-geoserver
@@ -28,11 +32,14 @@ spec:
 #    http:
 #      paths:
 #      - path: /
+#        pathType: ImplementationSpecific
 #        backend:
-#          serviceName: geoserver
-#          servicePort: 8080
+#          service:
+#            name: geoserver
+#            port:
+#              number: 8080
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-myserviceb
@@ -45,11 +52,14 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: pgadmin
-          servicePort: 80
+          service:
+            name: pgadmin
+            port:
+              number: 80
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingres-pgservice
@@ -62,6 +72,9 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: postgres
-          servicePort: 5432
+          service:
+            name: postgres
+            port:
+              number: 5432

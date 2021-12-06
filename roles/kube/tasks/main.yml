@@ -11,4 +11,13 @@
     cmd: 'kubectl create -f foobar_storage.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
   ignore_errors: true
+- name: Render Download Storage Definition
+  template:
+    src:  download_storage.j2.yaml
+    dest: '{{ manifest_folder }}/download_storage.yaml'
+- name: Create Download Storage
+  shell:
+    cmd: 'kubectl create -f download_storage.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
 
