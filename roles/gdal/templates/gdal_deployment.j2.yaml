@@ -14,7 +14,11 @@ spec:
     spec:
       containers:
         - name: gdal
-          image: gdal
+{% if repository is undefined %}
+          image: 'gdal:{{ image_version }}'
+{% else %}
+          image: '{{ repository }}/gdal:{{ image_version }}'
+{% endif %}
           env:
           - name: POSTGRES_PASSWORD
             valueFrom:

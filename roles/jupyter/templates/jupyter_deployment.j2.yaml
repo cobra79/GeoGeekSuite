@@ -14,8 +14,11 @@ spec:
     spec:
       containers:
         - name: jupyter
-          #image: jupyter/base-notebook
-          image: localhost:32000/gisjupyter:0.0.1
+{% if repository is undefined %}
+          image: 'gisjupyter:{{ image_version }}'
+{% else %}
+          image: '{{ repository }}/gisjupyter:{{ image_version }}'
+{% endif %}
           env:
           - name: JUPYTER_ENABLE_LAB
             value: "yes"

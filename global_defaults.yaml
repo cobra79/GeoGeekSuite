@@ -1,4 +1,5 @@
 gisnamespace: gis
+image_version: 0.0.1
 geodatabase:
   dbname: postgres
   dbadmin: postgres

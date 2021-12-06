@@ -26,8 +26,16 @@
   ignore_errors: true
 - name: Build Jupyter Image
   shell:
-    cmd: docker image build . -t gisjupyter
+    cmd: 'docker image build . -t gisjupyter:{{ image_version }}'
     chdir: '{{ image_files }}/jupyter'
+- name: Tag image (repo only)
+  shell:
+    cmd: 'docker tag gisjupyter:{{ image_version }} {{ repository }}/gisjupyter:{{ image_version }}'
+  when: repository is defined
+- name: Push Image to repo 
+  shell:
+    cmd: 'docker push {{ repository }}/gisjupyter:{{ image_version }}'
+  when: repository is defined
 - name: Render Jupyter Manifest
   template:
     src: jupyter_deployment.j2.yaml

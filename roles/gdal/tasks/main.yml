@@ -14,8 +14,17 @@
     dest: '{{ image_files }}/gdal/Dockerfile'
 - name: Build Image
   shell:
-    cmd: docker image build . -t gdal
+    cmd: 'docker image build . -t gdal:{{ image_version }}'
     chdir: '{{ image_files }}/gdal'
+- name: Tag Image (repo only)
+  shell:
+    cmd: 'docker tag gdal:{{ image_version }} {{ repository }}/gdal:{{ image_version }}'
+    chdir: '{{ image_files }}/gdal'
+  when: repository is defined
+- name: Push Image to repo 
+  shell:
+    cmd: 'docker push {{ repository }}/gdal:{{ image_version }}'
+  when: repository is defined
 - name: Render Deployment
   template:
     src: gdal_deployment.j2.yaml

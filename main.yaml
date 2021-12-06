@@ -26,5 +26,5 @@
         tags: jupyter }
   - { role: ingress,
        tags: ingress }
- # - { role: gdal,
- #      tags: gdal }
+  - { role: gdal,
+       tags: gdal }
