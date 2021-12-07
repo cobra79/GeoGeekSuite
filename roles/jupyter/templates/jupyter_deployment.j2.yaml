@@ -46,6 +46,8 @@ spec:
               name: jupyter
             - mountPath: /opt/cobra-python-packages
               name: devlibs
+            - mountPath: /download
+              name: download
       volumes:
         - name: jupyter
           persistentVolumeClaim:
@@ -54,3 +56,6 @@ spec:
           hostPath:
             path: '{{ local_lib_path }}/python'
             type: DirectoryOrCreate
+        - name: download
+          persistentVolumeClaim:
+            claimName: download-claim

@@ -36,9 +36,14 @@ spec:
           volumeMounts:
             - mountPath: /opt/cobra-python-packages
               name: devlibs
+            - mountPath: /download
+              name: download
       volumes:
         - name: devlibs
           hostPath:
             path: {{ local_lib_path }}/python
             type: DirectoryOrCreate
+        - name: download
+          persistentVolumeClaim:
+            claimName: download-claim
  
