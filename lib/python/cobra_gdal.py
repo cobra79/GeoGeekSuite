@@ -21,6 +21,7 @@ class cobra_gdal:
         if os.path.isfile(path_to_shape) == False:
             self.l.error(f'File {path_to_shape} does not exist')
         command = f'ogr2ogr -f "PostgreSQL" PG:"{self.connection_string}" "{path_to_shape}"'
+        self.l.debug(command)
         if skip_failures:
             command = f'{command} -skip-failures'
         self.l.debug(f'ogr2ogr -f "PostgreSQL" PG:"..." "{path_to_shape}"')

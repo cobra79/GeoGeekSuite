@@ -1,5 +1,6 @@
 import sys
 import os
+import logging
 
 class Logger(object):
     '''
@@ -22,14 +23,16 @@ class Logger(object):
             
     def error(self, message, error_object=None):
 
-        print(f'ERROR [{self.classname}] {message}')
+        logging.error(f'ERROR [{self.classname}] {message}')
+        
 
     def info(self, message):
 
         if self.level == 'INFO' or self.level == 'DEBUG':
-            print(f'INFO [{self.classname}] {message}')
-
+            logging.info(f'INFO [{self.classname}] {message}')
+            
     def debug(self, message):
         if self.level == 'DEBUG':
-            print(f'DEBUG [{self.classname}] {message}')
-
+            logging.debug(f'DEBUG [{self.classname}] {message}')
+            
+        
