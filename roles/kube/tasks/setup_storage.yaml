@@ -1,0 +1,24 @@
+---
+- name: Loop over storage 
+  debug:
+    msg: '{{ item.name }} path: {{ item.path }}'
+  with_items: '{{ storage }}'
+- name: For type local make sure path exists
+  file:
+    state: directory
+    path: '{{ item.path }}'
+  with_items: '{{ storage }}'
+  when: '"local" in item.type'
+- name: Render Download Storage Definition
+  template:
+    src:  local_storage.j2.yaml
+    dest: '{{ manifest_folder }}/{{ item.name }}_storage.yaml'
+  with_items: '{{ storage }}'
+  when: '"local" in item.type'
+- name: Create Storage
+  shell:
+    cmd: 'kubectl create -f {{ item.name }}_storage.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  with_items: '{{ storage }}'
+  when: '"local" in item.type'
+  ignore_errors: true

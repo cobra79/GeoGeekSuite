@@ -130,7 +130,6 @@ dmypy.json
 
 # Ansible Stuff
 inventory.yaml
-environment.yaml
 credentials.yaml
 
 # Local

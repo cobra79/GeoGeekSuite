@@ -24,15 +24,6 @@
     chdir: '{{ manifest_folder }}'
   ignore_errors: true
   ##
-- name: Render Postgres Storage Definition
-  template:
-    src: postgres_storage.j2.yaml
-    dest: '{{ manifest_folder }}/postgres_storage.yaml'
-- name: Create Storage
-  shell:
-    cmd: 'kubectl create -f postgres_storage.yaml -n {{ gisnamespace }}'
-    chdir: '{{ manifest_folder }}'
-  ignore_errors: true
 - name: Render Postgres Deployment Manifest
   template:
     src: postgres_deployment.j2.yaml

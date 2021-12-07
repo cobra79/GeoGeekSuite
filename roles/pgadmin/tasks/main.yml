@@ -18,15 +18,6 @@
     cmd: 'kubectl create -f pgadmin_secret.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
   ignore_errors: true
-- name: Render PG Admin Volume
-  template:
-    src: pgadmin_volume.j2.yaml
-    dest: '{{ manifest_folder }}/pgadmin_volume.yaml'
-- name: Create Pgadmin Volume
-  shell:
-    cmd: 'kubectl create -f pgadmin_volume.yaml -n {{ gisnamespace }}'
-    chdir: '{{ manifest_folder }}'
-  ignore_errors: true
 - name: Render PG Admin manifest
   template:
     src: pgadmin_deployment.j2.yaml

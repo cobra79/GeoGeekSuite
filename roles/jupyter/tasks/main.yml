@@ -8,22 +8,6 @@
   template:
     src: Dockerfile.j2
     dest: '{{ image_files }}/jupyter/Dockerfile'
-#- name: Build Jupyter Image
-#  docker_image:
-#    name: gisjupyter
-#    tag: '1'
-#    build:
-#      path: '{{ image_files }}/jupyter/'
-#    source: build
-- name: Render Jupyter Storage Definition
-  template:
-    src: jupyter_storage.j2.yaml
-    dest: '{{ manifest_folder }}/jupyter_storage.yaml'
-- name: Create Storage
-  shell:
-    cmd: 'kubectl create -f jupyter_storage.yaml -n {{ gisnamespace }}'
-    chdir: '{{ manifest_folder }}'
-  ignore_errors: true
 - name: Build Jupyter Image
   shell:
     cmd: 'docker image build . -t gisjupyter:{{ image_version }}'
