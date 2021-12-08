@@ -8,12 +8,12 @@
   - name: Scale Down
     shell:
         cmd: 'kubectl scale deployment {{ item }} --replicas=0 -n {{ gisnamespace }}'
-    with_items: ['postgres','pgadmin','jupyter','gdal']
+    with_items: ['postgres','pgadmin','jupyter','gdal', 'elasctic', 'kibana']
     tags: ['never','scaledown']
   - name: Scale Up
     shell:
       cmd: 'kubectl scale deployment {{ item }} --replicas=1 -n {{ gisnamespace }}'
-    with_items: ['postgres','pgadmin','jupyter','gdal']
+    with_items: ['postgres','pgadmin','jupyter','gdal', 'elasctic', 'kibana']
     tags: ['never','scaleup']
   roles:
   - { role: kube,
