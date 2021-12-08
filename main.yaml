@@ -28,3 +28,7 @@
        tags: ingress }
   - { role: gdal,
        tags: gdal }
+  - { role: elastic,
+       tags: elastic }
+  - { role: kibana,
+       tags: kibana }

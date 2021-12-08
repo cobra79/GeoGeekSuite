@@ -1,0 +1,25 @@
+---
+# tasks file for kibana
+- name: Render kibana Manifest
+  template:
+    src: kibana_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/kibana_deployment.yaml'
+- name: Remove kibana Deployment
+  shell:
+    cmd: 'kubectl delete -f kibana_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Create kibana Deployment
+  shell:
+    cmd: 'kubectl create -f kibana_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render kibana Service
+  template:
+    src: kibana_service.j2.yaml
+    dest: '{{ manifest_folder }}/kibana_service.yaml'
+- name: Create kibana Service
+  shell:
+    cmd: 'kubectl create -f kibana_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true

@@ -1,0 +1,25 @@
+---
+# tasks file for elastic
+- name: Render elastic Manifest
+  template:
+    src: elastic_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/elastic_deployment.yaml'
+- name: Remove elastic Deployment
+  shell:
+    cmd: 'kubectl delete -f elastic_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Create elastic Deployment
+  shell:
+    cmd: 'kubectl create -f elastic_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Render elastic Service
+  template:
+    src: elastic_service.j2.yaml
+    dest: '{{ manifest_folder }}/elastic_service.yaml'
+- name: Create elastic Service
+  shell:
+    cmd: 'kubectl create -f elastic_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
