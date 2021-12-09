@@ -21,3 +21,16 @@ storage:
   type: local
   path: '{{ storage_base }}/download'
   size: 1Gi
+deployments:
+- name: postgres
+  replicas: 1
+- name: pgadmin
+  replicas: 1
+- name: jupyter
+  replicas: 1
+- name: gdal
+  replicas: 1
+- name: elastic
+  replicas: 1
+- name: kibana
+  replicas: 1
