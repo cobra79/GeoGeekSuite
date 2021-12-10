@@ -144,6 +144,8 @@ todo.md
 /data/jupyter/*
 !/data/jupyter/samples
 /data/jupyter/samples/.ipynb_checkpoints
+!/data/jupyter/WorkInProgress
+/data/jupyter/WorkInProgress/.ipynb_checkpoints
 !/data/jupyter/*.ipynb
 /manifests
 /images
