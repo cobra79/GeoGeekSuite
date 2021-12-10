@@ -1,7 +1,0 @@
-# Samples
-
-## Content
-
-### Smoketest
-
-Notebook
