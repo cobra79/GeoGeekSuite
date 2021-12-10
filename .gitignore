@@ -142,6 +142,8 @@ todo.md
 /data/jupyter/.local/
 /data/jupyter/.wget-hsts
 /data/jupyter/*
+!/data/jupyter/samples
+/data/jupyter/samples/.ipynb_checkpoints
 !/data/jupyter/*.ipynb
 /manifests
 /images
