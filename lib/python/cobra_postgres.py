@@ -76,6 +76,17 @@ class PgInterface():
         self.password = os.environ['POSTGRES_PASSWORD']
         self.conn_string = f"host='postgres' dbname='{self.database}' user='postgres' password='{self.password}'"
     
+    def get_connection(self):
+
+        self.l.debug('Provide PG connection')
+        return psycopg2.connect(self.conn_string)
+
+    def switch_schema(self, schema_name):
+
+        self.l.debug(f'Switch schema to {schema_name}')
+        sql = f"SET search_path TO {schema_name}"
+        self.__execute_sql__(sql)
+
     def __execute_sql__(self, sql, fetch='none'):
         '''
         Execute SQL
@@ -108,12 +119,19 @@ class PgInterface():
         sql = 'SELECT version()'
         return self.__execute_sql__(sql, fetch='one')
     
-    def create_schema(self, schema_name):
+    def create_schema(self, schema_name, switch_to_schema = False):
         
         self.l.info(f'create schema {schema_name}')
         sql = f'CREATE SCHEMA IF NOT EXISTS {schema_name}'
         result = self.__execute_sql__(sql)
-        print(result)
+        if switch_to_schema:
+            self.switch_schema(schema_name)
+
+    def switch_schema(self, schema_name):
+
+        self.l.debug(f'Switch schema to {schema_name}')
+        sql = f"SET search_path TO {schema_name}"
+        self.__execute_sql__(sql)
         
     def drop_schema(self, schema_name):
 
@@ -122,7 +140,7 @@ class PgInterface():
         sql = f'DROP SCHEMA IF EXISTS {schema_name} CASCADE'
         self.__execute_sql__(sql)
 
-    def create_table(self, table_definition:TableDefinition, schema=None):
+    def create_table(self, table_definition:TableDefinition, schema=None, if_not_exits=True):
         
         self.l.info(f'create table {table_definition.name}')
         if schema == None:
@@ -140,8 +158,11 @@ class PgInterface():
 
             
         field_string = field_string[:-2]
-         
-        sql = f'CREATE TABLE {schema}.{table_definition.name} ({field_string});'
+        
+        if if_not_exits:
+            sql = f'CREATE TABLE IF NOT EXISTS {schema}.{table_definition.name} ({field_string});'
+        else:
+            sql = f'CREATE TABLE {schema}.{table_definition.name} ({field_string});'
         self.l.debug(sql)
         self.__execute_sql__(sql, fetch='none')
                 
@@ -160,7 +181,7 @@ class PgInterface():
         key_string = ','.join(key_list)
 
         
-
+        
         value_string = ''
 
         for a_value_set in value_list:
@@ -277,3 +298,66 @@ class DataLoader():
     def load_from_dict(self, data_dict):
         
         self.db_interface.insert_into_table(data_dict['schema'],data_dict['table'],data_dict['keys'],data_dict['values'])
+
+
+
+class DataModelManager():
+    
+    '''
+    Class to manage datamodels
+    can be used to apply a definition and create tables
+    or remove tables from postgres
+    '''
+    
+    def __init__(self):
+        
+        self.l = cobra_logging.Logger(self)
+        self.l.info('New DataModelManager')
+        self.data_models = {}
+        self.db_interface = PgInterface()
+     
+    def add_datamodel(self, datamodel:DataModelDefinition):
+        
+        self.l.info(f'add datamodel {datamodel.name}')
+        
+        self.data_models[datamodel.name] = datamodel
+        
+    def get_datamodel_names(self):
+        
+        return self.data_models.keys()
+        
+    def apply_datamodel(self, name):
+        '''
+        Create all tables defined in the datamodel
+        '''
+        self.l.info(f'apply datamodel {name}')
+        
+        dm = self.data_models[name]
+
+        self.l.debug(f'schema: {dm.schema}')
+        self.db_interface.create_schema(dm.schema)
+
+        for a_table_key in dm.table_definitions:
+            a_table = dm.table_definitions[a_table_key]
+            self.db_interface.create_table(a_table, schema=dm.schema)
+            
+            #print(dm.table_definitions[a_table].name)
+            #for a_field_key in dm.table_definitions[a_table].field_definitions:
+            #    a_field = dm.table_definitions[a_table].field_definitions[a_field_key]
+            #    print(f' - {a_field.name}  {a_field.type}')
+            
+    def remove_datamodel(self, name):
+        '''
+        Removes all tables from the database that are defined in the datamodel
+        '''
+        self.l.info(f'Remove datamodel {name}')
+        dm = self.data_models[name]
+        self.db_interface.drop_schema(dm.schema)
+
+
+
+
+
+
+
+
