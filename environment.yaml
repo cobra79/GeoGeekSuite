@@ -1,5 +1,6 @@
-#repository: localhost:32000
-project_folder: '/Users/marco/privat/GeoGeekSuite'
+repository: localhost:32000
+k8s_flavour: microk8s
+project_folder: '/home/marco/Projects/GeoGeekSuite'
 local_lib_path: '{{ project_folder }}/lib'
 manifest_folder: '{{ project_folder }}/manifests'
 image_files: '{{ project_folder }}/images'

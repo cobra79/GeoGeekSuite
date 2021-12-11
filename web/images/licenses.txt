@@ -1,0 +1,9 @@
+Jupyter
+File: 1280px-Jupyter_logo.svg.png
+Origin: https://en.wikipedia.org/wiki/Project_Jupyter#/media/File:Jupyter_logo.svg
+License: BSD
+
+Background
+File: pexels-suzy-hazelwood-1098515.jpg
+Origin: https://www.pexels.com/photo/planet-earth-220201/
+License: CC0

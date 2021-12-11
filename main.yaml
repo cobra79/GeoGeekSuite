@@ -32,5 +32,8 @@
        tags: elastic }
   - { role: kibana,
        tags: kibana }
-  - { role: jobregistry,
+ - { role: jobregistry,
        tags: jobregistry }
+  - { role: webhoster,
+       tags: webhoster }
+

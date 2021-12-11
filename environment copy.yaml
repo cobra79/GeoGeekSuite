@@ -1,0 +1,23 @@
+repository: localhost:32000
+project_folder: '/home/marco/Projects/GeoGeekSuite'
+local_lib_path: '{{ project_folder }}/lib'
+manifest_folder: '{{ project_folder }}/manifests'
+image_files: '{{ project_folder }}/images'
+storage_base: '{{ project_folder }}/data'
+storage: 
+- name: postgres 
+  type: local 
+  path: '{{ storage_base }}/postgres'
+  size: 5Gi
+- name: pgadmin 
+  type: local 
+  path: '{{ storage_base }}/pgadmin'
+  size: 10M
+- name: jupyter
+  type: local
+  path: '{{ storage_base }}/jupyter'
+  size: 10M
+- name: download
+  type: local
+  path: '{{ storage_base }}/download'
+  size: 1Gi
