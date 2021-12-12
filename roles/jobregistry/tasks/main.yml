@@ -1,2 +1,48 @@
 ---
 # tasks file for jobregistry
+- name: Create Image folder
+  file:
+    path: '{{ image_files }}/jobregistry'
+    state: directory
+- name: Render main.py
+  template:
+    src: main.j2.py
+    dest: '{{ image_files }}/jobregistry/main.py'
+- name: Render Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: '{{ image_files }}/jobregistry/Dockerfile'
+- name: Build Image
+  shell:
+    cmd: 'docker image build . -t jobregistry:{{ image_version }}'
+    chdir: '{{ image_files }}/jobregistry'
+- name: Tag Image (repo only)
+  shell:
+    cmd: 'docker tag jobregistry:{{ image_version }} {{ repository }}/jobregistry:{{ image_version }}'
+    chdir: '{{ image_files }}/jobregistry'
+  when: repository is defined
+- name: Push Image to repo 
+  shell:
+    cmd: 'docker push {{ repository }}/jobregistry:{{ image_version }}'
+  when: repository is defined
+- name: Render Deployment
+  template:
+    src: jobregistry_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/jobregistry_deployment.yaml'
+- name: Render Service 
+  template:
+    src: jobregistry_service.j2.yaml
+    dest: '{{ manifest_folder }}/jobregistry_service.yaml'
+- name: Apply Deployment 
+  shell:
+    cmd: 'kubectl create -f jobregistry_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+- name: Apply Service
+  shell:
+    cmd: 'kubectl create -f jobregistry_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+  ignore_errors: true
+
+
+

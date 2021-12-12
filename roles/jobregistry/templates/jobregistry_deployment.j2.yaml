@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gdal
+  name: jobregistry
 spec:
   replicas: 1
   selector:
     matchLabels:
-       app: gdal
+       app: jobregistry
   template:
     metadata:
       labels:
-        app: gdal
+        app: jobregistry
     spec:
       containers:
-        - name: gdal
+        - name: jobregistry
 {% if repository is undefined %}
-          image: 'gdal:{{ image_version }}'
+          image: 'jobregistry:{{ image_version }}'
 {% else %}
-          image: '{{ repository }}/gdal:{{ image_version }}'
+          image: '{{ repository }}/jobregistry:{{ image_version }}'
 {% endif %}
           env:
           - name: POSTGRES_PASSWORD
