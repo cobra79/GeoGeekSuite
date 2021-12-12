@@ -38,6 +38,8 @@ class cobra_jobregistry:
                         {'name':'name', 'type':'VARCHAR (64) NOT NULL'},
                         {'name':'job_type', 'type':'VARCHAR (32) NOT NULL'},
                         {'name': 'date_created', 'type':'TIMESTAMP DEFAULT now()'},
+                        {'name': 'date_started', 'type':'TIMESTAMP'},
+                        {'name': 'date_finished', 'type':'TIMESTAMP'},
                         {'name': 'priority', 'type':'INTEGER'},
                         {'name':'status', 'type':'VARCHAR (32)'}
                     ]

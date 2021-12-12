@@ -1,17 +1,17 @@
 import cobra_logging
-import cobra_gdal
 from flask import Flask, request, jsonify
+
 app = Flask(__name__)
-l = cobra_logging.Logger('GDAL Flask')
+l = cobra_logging.Logger('jobregistry Flask')
 l.debug('Start Cobra Logging')
 @app.route('/')
 def hello_world():
     l.debug('hello_world')
     return 'Hello, Docker!'
 
-@app.route('/load_shape', methods=['POST'])
-def load_shape():
-    app.logger.info('load_shape')
+@app.route('/job', methods=['POST'])
+def job():
+    app.logger.info('POST job')
     data = request.json
     g = cobra_gdal.cobra_gdal()
     try:

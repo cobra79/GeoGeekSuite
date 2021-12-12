@@ -3,6 +3,7 @@ import cobra_logging
 import os.path
 import cobra_postgres
 import time
+import subprocess
 class cobra_gdal:
     '''
     Wrapper for GDAL
@@ -35,9 +36,8 @@ class cobra_gdal:
     def _mainloop_(self):
 
         while True:
-            print('Start main loop')
             self.pick_a_job_when_not_busy()
-            time.sleep(5)
+            time.sleep(10)
 
 
     def pick_a_job_when_not_busy(self):
@@ -57,6 +57,9 @@ class cobra_gdal:
                 if result != None:
                     job_id = result[0]
                     job_type = result[1]
+                else:
+                    self.l.debug('No Waining jobs in queue')
+                    job_type = None
 
                 if job_type == 'shape2pg':
                     curs.execute(f"SELECT path_to_shape, skip_failures FROM gdal.shape2pg WHERE id = '{job_id}'")
@@ -73,6 +76,14 @@ class cobra_gdal:
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)
+            
+    def update_time(self, job_id, timefield):
+
+        self.l.debug('Update Time')
+        sql = f"UPDATE gdal.gdal_jobs SET {timefield}=now() WHERE id = '{job_id}'"
+        with self.pg.get_connection() as conn:
+            with conn.cursor() as curs:
+                curs.execute(sql)
 
     def execute_shape2pg(self, path_to_shape, job_id, skip_failures=True):
 
@@ -86,15 +97,22 @@ class cobra_gdal:
             self.busy = False
             return 
 
-        command = f'ogr2ogr -f "PostgreSQL" PG:"{self.connection_string}" "{path_to_shape}"'
-        self.l.debug(command)
-        if skip_failures:
-            command = f'{command} -skip-failures'
-        self.l.debug(f'ogr2ogr -f "PostgreSQL" PG:"..." "{path_to_shape}"')
         try:
-            os_return_value = os.system(command)
-            self.l.debug(f'ogr2ogr returned {os_return_value}')
-            self.update_job_status(job_id, 'Finished')
+            
+            args =['ogr2ogr','-f','PostgreSQL',f'PG: {self.connection_string}', path_to_shape]
+            if skip_failures:
+                args.append('-skipfailures')
+            return_value = subprocess.run(args)
+            self.update_time(job_id, 'date_started')
+
+            if return_value.returncode == 0:
+                self.l.info(f'Job {job_id} - loading {path_to_shape} finished successfully')
+                self.update_job_status(job_id, 'Finished')
+                self.update_time(job_id, 'date_finished')
+            else: 
+                self.l.error(f'Error in {job_id} - loading {path_to_shape} finished')
+                self.l.error(return_value.stderr)
+                self.update_job_status(job_id, 'Failed')
         except Exception as e:
             self.update_job_status(job_id, 'Failed')
             self.l.error(e)
