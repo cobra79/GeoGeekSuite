@@ -3,7 +3,18 @@ File: 1280px-Jupyter_logo.svg.png
 Origin: https://en.wikipedia.org/wiki/Project_Jupyter#/media/File:Jupyter_logo.svg
 License: BSD
 
+PG Admin
+File: Postgresql_elephant.svg.png
+Origin: https://en.wikipedia.org/wiki/PostgreSQL#/media/File:Postgresql_elephant.svg
+License: https://en.wikipedia.org/wiki/PostgreSQL#/media/File:Postgresql_elephant.svg
+
 Background
 File: pexels-suzy-hazelwood-1098515.jpg
 Origin: https://www.pexels.com/photo/planet-earth-220201/
 License: CC0
+
+Kibana 
+File: kibana-logo-color.png
+Orining: https://www.elastic.co/de/brand
+T&Cs: https://www.elastic.co/legal/trademarks
+

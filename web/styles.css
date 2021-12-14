@@ -1,12 +1,55 @@
+.hc {
+  margin: 30px;
+}
+
+#heading{
+  color: lightsteelblue;
+
+}
 .mdl-card {
-    width: 320px;
-    height: 320px;
-    margin: 10px;
-    background-color: lightgreen;
-  }
+  width: 270px;
+  margin: 30px;
+}
+.mdl-card--expand {
+  height: 270px;
+  
+  color: rgb(27, 27, 27);
+}
 
+#jupyter-card {
+  background-image: url('images/jupyter270.png');
+}
 
+#pgadmin-card {
+  background-image: url('images/pgadmin270.png');
+}
+
+#kibana-card {
+  background-image: url('images/kibana270.png');
+}
 
   body {
     background-image: url('images/pexels-suzy-hazelwood-1098515.jpg');
+    display:flex; 
+    flex-direction:column; 
+    height:100vh;
+    margin:0;
   }
+
+  .root-div {
+    display: block;
+  }
+
+  mdl-card__title-text {
+    color: rgb(27, 27, 27);
+  }
+
+  .footer {
+    clear: both;
+    position: relative;
+    height: 200px;
+    margin-top: -200px;
+    color: red;
+    margin-top:auto; 
+    min-height:50px;
+}
