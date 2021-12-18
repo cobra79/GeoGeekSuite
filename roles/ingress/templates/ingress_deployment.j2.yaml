@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-jupyter
+  name: 'ingress-jupyter-{{ item }}'
   annotations:
     kubernetes.io/ingress.class: "{{ ingress_class }}"
 spec:
   rules:
-  - host: jupyter.localhost
+  - host: 'jupyter.{{ item }}'
     http:
       paths:
       - path: /
@@ -21,12 +21,12 @@ spec:
 #apiVersion: networking.k8s.io/v1
 #kind: Ingress
 #metadata:
-#  name: ingress-geoserver
+#  name: 'ingress-geoserver-{{ item }}'
 #  annotations:
 #    kubernetes.io/ingress.class: "{{ ingress_class }}"
 #spec:
 #  rules:
-#  - host: geoserver.localhost
+#  - host: 'geoserver.{{ item }}'
 #    http:
 #      paths:
 #      - path: /
@@ -36,35 +36,15 @@ spec:
 #            name: geoserver
 #            port:
 #              number: 8080
----
-#apiVersion: networking.k8s.io/v1
-#kind: Ingress
-#metadata:
-#  name: ingress-pgadmin
-#  annotations:
-#    # use the shared ingress-nginx
-#    kubernetes.io/ingress.class: "{{ ingress_class }}"
-#spec:
-#  rules:
-#  - host: localhost
-#    http:
-#      paths:
-#      - path: /
-#        pathType: ImplementationSpecific
-#        backend:
-#          service:
-#            name: pgadmin
-#            port:
-#              number: 80
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-pgadmin
+  name: 'ingress-pgadmin-{{ item }}'
   annotations:
     kubernetes.io/ingress.class: "{{ ingress_class }}"
 spec:
   rules:
-  - host: pgadmin.localhost
+  - host: 'pgadmin.{{ item }}'
     http:
       paths:
       - path: /
@@ -78,13 +58,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingres-pgservice
+  name: 'ingres-pgservice-{{ item }}'
   annotations:
-    # use the shared ingress-nginx
     kubernetes.io/ingress.class: "{{ ingress_class }}"
 spec:
   rules:
-  - host: postgres.localhost
+  - host: 'postgres.{{ item }}'
     http:
       paths:
       - path: /
@@ -98,12 +77,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingres-kibana
+  name: 'ingres-kibana-{{ item }}'
   annotations:
     kubernetes.io/ingress.class: "{{ ingress_class }}"
 spec:
   rules:
-  - host: kibana.localhost
+  - host: 'kibana.{{ item }}'
     http:
       paths:
       - path: /
@@ -117,12 +96,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingres-webhoster
+  name: 'ingres-webhoster-{{ item }}'
   annotations:
     kubernetes.io/ingress.class: "{{ ingress_class }}"
 spec:
   rules:
-  - host: localhost
+  - host: '{{ item }}'
     http:
       paths:
       - path: /

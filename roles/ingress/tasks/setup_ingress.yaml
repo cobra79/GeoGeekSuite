@@ -20,7 +20,8 @@
 - name: Render Ingress Definition
   template:
     src: ingress_deployment.j2.yaml
-    dest: '{{ manifest_folder }}/ingress_deployment.yaml'
+    dest: '{{ manifest_folder }}/ingress_deployment_{{ item }}.yaml'
+  with_items: '{{ ingress_resolvable_names }}'
 #- name: Render Ingress Definition
 #  template:
 #    src: ingress_controller.j2.yaml
@@ -34,10 +35,12 @@
 #  when: k8s_flavour == 'default'
 - name: Remove Existing
   shell:
-    cmd: 'kubectl delete -f ingress_deployment.yaml -n {{ gisnamespace }}'
+    cmd: 'kubectl delete -f ingress_deployment_{{ item }}.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
+  with_items: '{{ ingress_resolvable_names }}'
   ignore_errors: true
 - name: Create Ingress Deployment
   shell:
-    cmd: 'kubectl create -f ingress_deployment.yaml -n {{ gisnamespace }}'
+    cmd: 'kubectl apply -f ingress_deployment_{{ item }}.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
+  with_items: '{{ ingress_resolvable_names }}'
