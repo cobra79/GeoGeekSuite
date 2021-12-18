@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kibana
-          image: docker.elastic.co/kibana/kibana:7.16.0
+          image: {{ kibana.registry }}/{{ kibana.image }}:{{ kibana.tag }}
           env:
           - name: ELASTICSEARCH_HOSTS
             value: "http://elastic:9200"

@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook
+FROM {{ jupyter.base_image }}:{{ jupyter.base_image_version }}
 
 USER root
 

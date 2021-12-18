@@ -1,5 +1,12 @@
 gisnamespace: gis
-image_version: 0.0.1
+k8s_flavour: microk8s
+image_version: dev-0.0.1
+elasticsearch:
+  registry: 'docker.elastic.co/elasticsearch'
+  image: 'elasticsearch'
+  tag: '7.16.0'
+gdal:
+  ubuntu_version: '20.04'
 geodatabase:
   dbname: postgres
   dbadmin: postgres
@@ -12,7 +19,19 @@ geodatabase:
     container_version: '4.30'
     mail: '{{ mail }}'
     pw: '{{ password | b64encode }}'
+jobregistry:
+  ubuntu_version: '20.04'
 jupyter:
-  container_image: jupyter/minimal-notebook
+  base_image: jupyter/base-notebook
+  base_image_version: 'notebook-6.4.6'
   pw: '{{ password }}'
-
+kibana:
+  registry: 'docker.elastic.co/kibana'
+  image: 'kibana'
+  tag: '7.16.0'
+pgadmin:
+  image: 'dpage/pgadmin4'
+  tag: '6.3'
+webhoster:
+  image: 'httpd'
+  tag: '2.4'

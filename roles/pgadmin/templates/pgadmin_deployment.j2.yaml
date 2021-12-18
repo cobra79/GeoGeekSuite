@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pgadmin
-          image: "dpage/pgadmin4"
+          image: "{{ pgadmin.image }}:{{ pgadmin.tag }}"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:

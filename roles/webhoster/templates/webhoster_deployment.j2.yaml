@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: webhoster
-          image: httpd:2.4
+          image: {{ webhoster.image }}:{{ webhoster.tag }}
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 80

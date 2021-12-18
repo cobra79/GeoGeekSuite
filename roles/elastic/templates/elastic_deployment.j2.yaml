@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: elastic
-          image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+          image: '{{ elasticsearch.registry }}/{{ elasticsearch.image }}:{{ elasticsearch.tag }}'
           env:
           - name: discovery.type
             value: "single-node"

@@ -18,3 +18,8 @@ File: kibana-logo-color.png
 Orining: https://www.elastic.co/de/brand
 T&Cs: https://www.elastic.co/legal/trademarks
 
+
+Github:
+File: octocat.png
+Origin: https://github.com/logos
+T&Cs: https://github.com/logos

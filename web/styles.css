@@ -28,6 +28,10 @@
   background-image: url('images/kibana270.png');
 }
 
+#gitwiki-card{
+  background-image: url('images/octocat270.png');
+}
+
   body {
     background-image: url('images/pexels-suzy-hazelwood-1098515.jpg');
     display:flex; 

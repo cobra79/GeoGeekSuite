@@ -3,33 +3,35 @@
 - name: Check if k8sflavour has a valid value
   fail:
     msg: '{{ k8s_flavour }} is not a valid value for k8s_flavour'
-  when: k8s_flavour not in ['default', 'microk8s']
-- name: Set ingress class for default
-  set_fact:
-    ingress_class: "nginx"
-  when: k8s_flavour == 'default'
+  #when: k8s_flavour not in ['default', 'microk8s']
+  #Start with microk8s only
+  when: k8s_flavour not in ['microk8s']
+#- name: Set ingress class for default
+#  set_fact:
+#    ingress_class: "nginx"
+#  when: k8s_flavour == 'default'
 - name: Set ingress class for microk8s
   set_fact:
     ingress_class: "public"
   when: k8s_flavour == 'microk8s'
-- name: Print ingress_class
-  debug:
-    msg: 'Ingress class set to {{ ingress_class }}'
+#- name: Print ingress_class
+#  debug:
+#    msg: 'Ingress class set to {{ ingress_class }}'
 - name: Render Ingress Definition
   template:
     src: ingress_deployment.j2.yaml
     dest: '{{ manifest_folder }}/ingress_deployment.yaml'
-- name: Render Ingress Definition
-  template:
-    src: ingress_controller.j2.yaml
-    dest: '{{ manifest_folder }}/ingress_controller.yaml'
-  when: k8s_flavour == 'default'
-- name: Create Ingress ingress_controller
-  shell:
-    cmd: 'kubectl create -f ingress_controller.yaml'
-    chdir: '{{ manifest_folder }}'
-  ignore_errors: true
-  when: k8s_flavour == 'default'
+#- name: Render Ingress Definition
+#  template:
+#    src: ingress_controller.j2.yaml
+#    dest: '{{ manifest_folder }}/ingress_controller.yaml'
+#  when: k8s_flavour == 'default'
+#- name: Create Ingress ingress_controller
+#  shell:
+#    cmd: 'kubectl create -f ingress_controller.yaml'
+#    chdir: '{{ manifest_folder }}'
+#  ignore_errors: true
+#  when: k8s_flavour == 'default'
 - name: Remove Existing
   shell:
     cmd: 'kubectl delete -f ingress_deployment.yaml -n {{ gisnamespace }}'
