@@ -8,6 +8,10 @@
   template:
     src: main.j2.py
     dest: '{{ image_files }}/jobregistry/main.py'
+- name: Render debug.py
+  template:
+    src: debug.py
+    dest: '{{ image_files }}/jobregistry/debug.py'
 - name: Render Dockerfile
   template:
     src: Dockerfile.j2
@@ -20,11 +24,11 @@
   shell:
     cmd: 'docker tag jobregistry:{{ image_version }} {{ repository }}/jobregistry:{{ image_version }}'
     chdir: '{{ image_files }}/jobregistry'
-  when: repository is defined
+  #when: repository is defined
 - name: Push Image to repo 
   shell:
     cmd: 'docker push {{ repository }}/jobregistry:{{ image_version }}'
-  when: repository is defined
+  #when: repository is defined
 - name: Render Deployment
   template:
     src: jobregistry_deployment.j2.yaml

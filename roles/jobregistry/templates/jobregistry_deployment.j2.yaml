@@ -14,11 +14,7 @@ spec:
     spec:
       containers:
         - name: jobregistry
-{% if repository is undefined %}
-          image: 'jobregistry:{{ image_version }}'
-{% else %}
           image: '{{ repository }}/jobregistry:{{ image_version }}'
-{% endif %}
           env:
           - name: POSTGRES_PASSWORD
             valueFrom:
@@ -41,7 +37,7 @@ spec:
       volumes:
         - name: devlibs
           hostPath:
-            path: {{ local_lib_path }}/python
+            path: '{{ local_lib_path }}/python'
             type: DirectoryOrCreate
         - name: download
           persistentVolumeClaim:

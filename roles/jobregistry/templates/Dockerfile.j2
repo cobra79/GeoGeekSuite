@@ -8,11 +8,9 @@ RUN apt update
 RUN apt install -y python3-pip
 RUN pip3 install flask
 RUN pip3 install psycopg2-binary
+RUN pip3 install requests
 
 WORKDIR /opt/gdal
 COPY main.py main.py
-
-CMD ["python3", "-u", "main.py"]
-
-
+COPY debug.py debug.py
 
