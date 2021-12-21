@@ -11,7 +11,8 @@ RUN apt-get update \
     && LANG=C.UTF-8 add-apt-repository -y ppa:ubuntugis/ppa \
     && apt update \
     && apt install gdal-bin -y \
-    && apt install unzip -y
+    && apt install unzip -y \
+    && apt install osm2pgsql -y
 
 USER jovyan
 RUN pip3 install ipyleaflet && \
