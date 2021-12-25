@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osm2pgsql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: osm2pgsql
+  template:
+    metadata:
+      labels:
+        app: osm2pgsql
+    spec:
+      containers:
+        - name: osm2pgsql
+{% if repository is undefined %}
+          image: 'osm2pgsql:{{ image_version }}'
+{% else %}
+          image: '{{ repository }}/osm2pgsql:{{ image_version }}'
+{% endif %}
+          env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pg-secret
+                key: POSTGRES_PASSWORD
+          - name: LOG_LEVEL
+            value: DEBUG
+          - name: PYTHONPATH
+            value: /opt/cobra-python-packages
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 80
+          command: ["python3", "main.py"]
+          volumeMounts:
+            - mountPath: /opt/cobra-python-packages
+              name: devlibs
+            - mountPath: /download
+              name: download
+            - mountPath: /styles
+              name: styles
+      volumes:
+        - name: devlibs
+          hostPath:
+            path: {{ local_lib_path }}/python
+            type: DirectoryOrCreate
+        - name: download
+          persistentVolumeClaim:
+            claimName: download-claim
+        - name: styles
+          persistentVolumeClaim:
+            claimName: styles-claim
+ 

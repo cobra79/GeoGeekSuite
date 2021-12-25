@@ -21,6 +21,10 @@ storage:
   type: local
   path: '{{ storage_base }}/download'
   size: 1Gi
+- name: styles
+  type: local
+  path: '{{ storage_base }}/styles'
+  size: 5M
 deployments:
 - name: postgres
   replicas: 1

@@ -52,7 +52,7 @@ class cobra_gdal:
        
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
-                curs.execute("SELECT id, job_type FROM gdal.gdal_jobs WHERE status = 'Waiting' ORDER BY priority, date_created LIMIT 1")
+                curs.execute("SELECT id, job_type FROM jobs.jobs WHERE status = 'Waiting' ORDER BY priority, date_created LIMIT 1")
                 result = curs.fetchone()
                 if result != None:
                     job_id = result[0]
@@ -62,7 +62,7 @@ class cobra_gdal:
                     job_type = None
 
                 if job_type == 'shape2pg':
-                    curs.execute(f"SELECT path_to_shape, skip_failures FROM gdal.shape2pg WHERE id = '{job_id}'")
+                    curs.execute(f"SELECT path_to_shape, skip_failures FROM jobs.shape2pg WHERE id = '{job_id}'")
                     result = curs.fetchone()
                     if result != None:
                         path_to_shape = result[0]
@@ -72,7 +72,7 @@ class cobra_gdal:
 
     def update_job_status(self, job_id, new_status):
         self.l.debug(f'update_job_status of {job_id}: Set to {new_status}')
-        sql = f"UPDATE gdal.gdal_jobs SET status='{new_status}' WHERE id = '{job_id}'"
+        sql = f"UPDATE jobs.jobs.jobs SET status='{new_status}' WHERE id = '{job_id}'"
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)
@@ -80,7 +80,7 @@ class cobra_gdal:
     def update_time(self, job_id, timefield):
 
         self.l.debug('Update Time')
-        sql = f"UPDATE gdal.gdal_jobs SET {timefield}=now() WHERE id = '{job_id}'"
+        sql = f"UPDATE jobs.jobs SET {timefield}=now() WHERE id = '{job_id}'"
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)

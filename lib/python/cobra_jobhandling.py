@@ -66,14 +66,16 @@ class Job_Manager():
         
         self.l = cobra_logging.Logger(self)
         self.l.debug ('New Job_Manager')
+        #TODO: Use job registry instead of direct DB access
         self.pg_interface = cobra_postgres.PgInterface()
         self.pg_interface.switch_schema('gdal')
     
     def get_jobs(self, df=False):
 
-        self.l.debug(f'get_fobs')
+        self.l.debug(f'get_jobs')
         
         job_list = []
+        #TODO: Use job registry instead of direct DB access
         with self.pg_interface.get_connection() as conn:
             
             with conn.cursor() as curs:
@@ -110,7 +112,36 @@ class Job_Manager():
         if priority != None:
             body['priority'] = priority
     
-        r = requests.post('http://jobregistry:5000/job', json=body)
+        r = requests.post('http://jobregistry:5000/shape_to_pg_job', json=body)
+        
+        if r.status_code != 200:
+            raise Exception(f'job server has not accepted the job')
+
+    def create_new_osm_to_pg(self, path_to_osm, job_Name = None, priority = None, style='default.style'):
+
+        self.l.debug(f'create_new_osm_to_pg ({path})')
+
+        # Check if file exists
+        if os.path.isfile(path_to_osm) == False:
+            
+            raise Exception(f'File {path_to_osm} does not exist')
+
+        # Check if style exists
+        if os.path.isfile(os.path.join('/styles',style)) == False:
+            
+            raise Exception(f'File {path_to_osm} does not exist')
+
+        body = {
+            'path_to_osm' : path_to_osm,
+            'style' : style
+            }
+
+        if job_name != None:
+            body['job_name'] = job_name
+        if priority != None:
+            body['priority'] = priority
+
+    r = requests.post('http://jobregistry:5000/osm_to_pg_job', json=body)
         
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')

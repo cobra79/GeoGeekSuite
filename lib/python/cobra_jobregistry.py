@@ -27,12 +27,12 @@ class cobra_jobregistry:
 
         self.l.debug('init_database_structure')
         
-        self.pg.create_schema('gdal', True)
-        gdal_dm_dict = {
-            'name': 'gdal',
+        self.pg.create_schema('jobs', True)
+        job_dm_dict = {
+            'name': 'jobs',
             'tables':[
                 {
-                    'tablename':'gdal_jobs',
+                    'tablename':'jobs',
                     'fields':[
                         {'name':'id','type':'UUID PRIMARY KEY'},
                         {'name':'name', 'type':'VARCHAR (64) NOT NULL'},
@@ -51,15 +51,23 @@ class cobra_jobregistry:
                         {'name':'path_to_shape', 'type':'VARCHAR (255) NOT NULL'},
                         {'name':'skip_failures', 'type':'BOOLEAN'}
                     ]
+                },
+                {
+                    'tablename':'osm2pg',
+                    'fields':[
+                        {'name':'id','type':'UUID PRIMARY KEY'},
+                        {'name':'path_to_osm', 'type':'VARCHAR (255) NOT NULL'},
+                        {'name':'style', 'type':'VARCHAR (32)'}
+                    ]
                 }
             ]
         }
         
         dmf = cobra_datamodelfabric.DataModelFabric()
-        gdal_dm = dmf.create_from_dict(gdal_dm_dict)
+        job_dm = dmf.create_from_dict(job_dm_dict)
         dm_man = cobra_postgres.DataModelManager()
-        dm_man.add_datamodel(gdal_dm)
-        dm_man.apply_datamodel('gdal')
+        dm_man.add_datamodel(job_dm)
+        dm_man.apply_datamodel('jobs')
 
     def create_shape2pg_job(self, path_to_shape, job_name=None, skip_failures=True, priority=42):
     
@@ -69,12 +77,64 @@ class cobra_jobregistry:
         if job_name == None:
             job_name = 'Load Shape'
 
-        #Update GDAL Jobs
+        #Update Jobs
         keys = ['id','name','job_type','status','priority']
         values = [[job_id, job_name,'shape2pg','Waiting', str(priority)]]
-        self.pg.insert_into_table('gdal','gdal_jobs',keys, values)
+        self.pg.insert_into_table('jobs','jobs',keys, values)
 
         #Update shape2pg table
         keys = ['id','path_to_shape','skip_failures']
         values = [[job_id, path_to_shape, str(skip_failures)]]
-        self.pg.insert_into_table('gdal','shape2pg',keys, values)  
+        self.pg.insert_into_table('jobs','shape2pg',keys, values)  
+
+    def create_osm2pg_job(self, path_to_osm, style, job_name=None, priority=42):
+
+        self.l.debug('create_osm2pg_job')
+
+        job_id = str(uuid.uuid4())
+        if job_name == None:
+            job_name = 'Load OSM'
+
+        #Update Jobs
+        keys = ['id','name','job_type','status','priority']
+        values = [[job_id, job_name,'osm2pg','Waiting', str(priority)]]
+        self.pg.insert_into_table('jobs','jobs',keys, values)
+
+        #Update shape2pg table
+        keys = ['id','path_to_osm','style']
+        values = [[job_id, path_to_osm, style]]
+        self.pg.insert_into_table('jobs','osm2pg',keys, values)
+
+    def get_jobs(self, job_type=None, status=None):
+
+        self.l.debug(f'get_jobs (job_type:{str(job_type)}, status:{str(status)}')
+
+        job_list = []
+
+        sql = 'SELECT * FROM jobs.jobs'
+
+        if job_type != None and status == None:
+
+            sql = f"{sql} WHERE job_type='{job_type}'"
+
+        if job_type == None and status != None:
+
+            sql = f"{sql} WHERE status='{status}'"
+
+        if job_type != None and status != None:
+
+            sql = f"{sql} WHERE job_type='{job_type}' AND status='{status}'"
+
+        with self.pg.get_connection() as conn:
+            
+            with conn.cursor() as curs:
+                
+                curs.execute(sql)
+                results = curs.fetchall()
+                for a_result in results:
+                    
+                    job_list.append(a_result)
+
+        self.l.debug(f'Returning {len(job_list)} jobs')
+
+        return job_list

@@ -24,7 +24,7 @@ class cobra_osm2pgsql():
         else:
             self.connection_string = f'host={host} dbname={database} user={user} password={password} port=5432 schemas={schema}'
         
-        self.connection_string = "postgresql://postgres:fooBar@postgres:5432/osm"
+        self.connection_string = "postgresql://postgres:fooBar@postgres:5432/postgres"
 
         self.busy = False
 
@@ -66,7 +66,8 @@ class cobra_osm2pgsql():
 
         try:
             
-            args =['osm2pgsql','-c','-d', self.connection_string, '-S', f'{self.style}', path_to_pbf]
+            #args =['osm2pgsql','-c','-d', self.connection_string, '-S', f'{self.style}', path_to_pbf]
+            args =['osm2pgsql','-c','-S', f'{self.style}', path_to_pbf]
             self.l.debug(self.connection_string)
             if cache != None:
                 args.append(f'--cache {str(cache)}')

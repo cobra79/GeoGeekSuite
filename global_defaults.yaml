@@ -1,6 +1,6 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-002
+image_version: dev-0.0.1-010
 elasticsearch:
   registry: 'docker.elastic.co/elasticsearch'
   image: 'elasticsearch'

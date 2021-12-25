@@ -28,6 +28,8 @@
        tags: ingress }
   - { role: gdal,
        tags: gdal }
+  - { role: osm2pgsql,
+       tags: osm2pgsql }
   - { role: elastic,
        tags: elastic }
   - { role: kibana,
