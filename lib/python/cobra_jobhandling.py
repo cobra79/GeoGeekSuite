@@ -75,17 +75,13 @@ class Job_Manager():
         self.l.debug(f'get_jobs')
         
         job_list = []
-        #TODO: Use job registry instead of direct DB access
-        with self.pg_interface.get_connection() as conn:
-            
-            with conn.cursor() as curs:
-                
-                curs.execute('SELECT * FROM gdal.gdal_jobs')
-                results = curs.fetchall()
-                for a_result in results:
-                    new_job = Job()
-                    new_job.set_values_from_db(a_result[0], a_result[1],a_result[2],a_result[3],a_result[4],a_result[5],a_result[6],a_result[7])
-                    job_list.append(new_job)
+        results = requests.get('http://jobregistry:5000/jobs')
+
+        for a_result in results.json():
+            new_job = Job()
+    
+            new_job.set_values_from_db(a_result[0], a_result[1],a_result[2],a_result[3],a_result[4],a_result[5],a_result[6],a_result[7])
+            job_list.append(new_job)
                 
         if df == False:
         
@@ -141,7 +137,7 @@ class Job_Manager():
         if priority != None:
             body['priority'] = priority
 
-    r = requests.post('http://jobregistry:5000/osm_to_pg_job', json=body)
+        r = requests.post('http://jobregistry:5000/osm_to_pg_job', json=body)
         
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')
