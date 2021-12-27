@@ -1,31 +1,20 @@
-import cobra_logging
+import cobra.helper.logging as logging
 import time
 import subprocess
 import os
 
 
-class cobra_osm2pgsql():
+class Osm2PgSql():
 
     '''
     wrapper for osm2pgsql
     '''
 
-    def __init__(self, style="default.style", database='osm', password=None, run_in_loop=True, host='postgres', user='postgres',schema=None):
+    def __init__(self, style="default.style", run_in_loop = False):
 
-        self.l = cobra_logging.Logger(self)
-        self.l.debug("New cobra_osm2pgsql")
+        self.l = logging.Logger(self)
+        self.l.debug("New osm2pgsql")
         self.style = style
-        self.database = database
-
-        if password == None:
-            password = os.environ['POSTGRES_PASSWORD']
-        if schema == None:
-            self.connection_string = f'host={host} dbname={database} user={user} password={password} port=5432'
-        else:
-            self.connection_string = f'host={host} dbname={database} user={user} password={password} port=5432 schemas={schema}'
-        
-        self.connection_string = "postgresql://postgres:fooBar@postgres:5432/postgres"
-
         self.busy = False
 
         if run_in_loop:
@@ -33,7 +22,7 @@ class cobra_osm2pgsql():
 
     def __repr__(self):
 
-        return "cobra_osm2pgsql"
+        return "osm2pgsql"
 
     def __str__(self):
         

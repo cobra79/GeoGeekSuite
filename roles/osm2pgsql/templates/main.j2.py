@@ -1,11 +1,13 @@
-import cobra_logging
+import cobra.helper.logging as logging
+import cobra.tools.osm2pgsql as osm
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
-l = cobra_logging.Logger('Osm2pgsql Flask')
+l = logging.Logger('Osm2pgsql Flask')
 l.debug('Start Cobra Logging')
 
 #TODO: Schema handling
+osm.Osm2PgSql(run_in_loop = True)
 
 @app.route('/')
 def hello_world():

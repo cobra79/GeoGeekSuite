@@ -1,13 +1,13 @@
 import psycopg2
 import os
-import cobra_logging
+import cobra.helper.logging as logging
 
 class FieldDefinition():
     '''
     Class to describe a postgres table field
     '''
     def __init__(self, field_name, field_type, primary_key = False):
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.debug(f'New FieldDefinition for {field_name}')
         self.name = field_name
         self.type = field_type
@@ -24,7 +24,7 @@ class TableDefinition():
     Class to describe a postgres table
     '''
     def __init__(self, table_name):
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.debug(f'New TableDefinition for {table_name}')
         self.name = table_name
         self.field_definitions = {}
@@ -38,7 +38,7 @@ class DataModelDefinition():
     Class to describe a collection of tables
     '''
     def  __init__(self, name, schema=None):
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.debug(f'New DataModelDefinition ({name})')
         self.name = name
         if schema == None:
@@ -71,7 +71,7 @@ class PgInterface():
     Base class to interact with the Postgres Database
     '''
     def __init__(self, database='postgres'):
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.database = database
         self.password = os.environ['POSTGRES_PASSWORD']
         self.conn_string = f"host='postgres' dbname='{self.database}' user='postgres' password='{self.password}'"
@@ -208,7 +208,7 @@ class DataModelManager():
     
     def __init__(self):
         
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.info('New DataModelManager')
         self.data_models = {}
         self.db_interface = PgInterface()
@@ -265,7 +265,7 @@ class DataModelFabric():
     
     def __init__(self):
         
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         
     def create_from_dict(self, dm_dict:dict):
         
@@ -311,7 +311,7 @@ class DataModelManager():
     
     def __init__(self):
         
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.info('New DataModelManager')
         self.data_models = {}
         self.db_interface = PgInterface()

@@ -1,6 +1,6 @@
-import cobra_logging
+import cobra.helper.logging as logging
 import requests
-import cobra_postgres
+import cobra.postgres.interface as pgi
 import pandas as pd
 import os
 
@@ -12,7 +12,7 @@ class Job():
     
     def __init__(self):
 
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.debug("NEW Job")
         
         self.id : UUID = None
@@ -56,7 +56,7 @@ class Job():
         self.priority,
         self.status]
 
-class Job_Manager():
+class Jobmanager():
 
     '''
     Class to query and create jobs
@@ -64,10 +64,10 @@ class Job_Manager():
     
     def __init__(self):
         
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.l.debug ('New Job_Manager')
         #TODO: Use job registry instead of direct DB access
-        self.pg_interface = cobra_postgres.PgInterface()
+        self.pg_interface = pgi.PgInterface()
         self.pg_interface.switch_schema('gdal')
     
     def get_jobs(self, df=False):
@@ -91,6 +91,32 @@ class Job_Manager():
             
             return pd.DataFrame([a_job.values_as_list() for a_job in job_list], columns = ['UUID','Name','Job Type','Date created','Date started','Date finished','Priority','Status'])
     
+    def create_job_from_dataset(self, dataset):
+
+        self.l.debug('create_job_from_dataset')
+
+        if dataset['Type'] == 'Shape':
+
+            dataset_name = dataset['Dataset']
+            data_file = dataset['File']
+            path = dataset['Path']
+
+            self.create_new_shape_to_pg(f'{path}/{data_file}', f'Load shape from {dataset_name}')
+
+        elif dataset['Type'] == 'OSM PBF':
+
+            dataset_name = dataset['Dataset']
+            data_file = dataset['File']
+            path = dataset['Path']
+
+            self.create_new_osm_to_pg(f'{path}/{data_file}', f'Load OSM from {dataset_name}')
+        
+        else:
+
+            self.l.error('Cannot load this dataset yet')
+
+
+
     def create_new_shape_to_pg(self, path, job_name = None, skip_failures = None, priority = None):
         
         self.l.debug(f'create_new_shape_to_pg ({path})')
@@ -113,9 +139,9 @@ class Job_Manager():
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')
 
-    def create_new_osm_to_pg(self, path_to_osm, job_Name = None, priority = None, style='default.style'):
+    def create_new_osm_to_pg(self, path_to_osm, job_name = None, priority = None, style='default.style'):
 
-        self.l.debug(f'create_new_osm_to_pg ({path})')
+        self.l.debug(f'create_new_osm_to_pg ({path_to_osm})')
 
         # Check if file exists
         if os.path.isfile(path_to_osm) == False:

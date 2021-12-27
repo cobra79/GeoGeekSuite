@@ -1,5 +1,5 @@
-import cobra_logging
-import cobra_postgres as pg
+import cobra.helper.logging as logging
+import cobra.postgres.interface as pgi
 import os
 
 class DataModelFabric():
@@ -10,17 +10,17 @@ class DataModelFabric():
     
     def __init__(self):
         
-        self.l = cobra_logging.Logger(self)
+        self.l = logging.Logger(self)
         self.osmExplorer = None #Placehoder for the Cobra OSM Explorer
         
     def create_from_dict(self, dm_dict:dict):
         
         self.l.debug('create from dict')
-        dm = pg.DataModelDefinition(dm_dict['name'])
+        dm = pgi.DataModelDefinition(dm_dict['name'])
         for a_table in dm_dict['tables']:
-            pg_table = pg.TableDefinition(a_table['tablename'])
+            pg_table = pgi.TableDefinition(a_table['tablename'])
             for a_field in a_table['fields']:
-                pg_field = pg.FieldDefinition(a_field['name'], a_field['type'])
+                pg_field = pgi.FieldDefinition(a_field['name'], a_field['type'])
                 pg_table.add_field(pg_field)
             dm.add_table(pg_table)
         return dm

@@ -1,11 +1,11 @@
-import cobra_logging
-import cobra_jobregistry
+import cobra.helper.logging as logging
+import cobra.jobserver.jobregistry as jobs
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-l = cobra_logging.Logger('jobregistry Flask')
+l = logging.Logger('jobregistry Flask')
 
-reg = cobra_jobregistry.cobra_jobregistry()
+reg = jobs.Jobregistry()
 
 @app.route('/')
 def hello_world():

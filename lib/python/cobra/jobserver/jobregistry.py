@@ -1,11 +1,11 @@
 import os
-import cobra_logging
+import cobra.helper.logging as logging
 import os.path
-import cobra_postgres
-import cobra_datamodelfabric
+import cobra.postgres.interface as pgi
+import cobra.postgres.datamodelfabric as fabric
 import uuid
 
-class cobra_jobregistry:
+class Jobregistry:
     '''
     Jobregistry
     '''
@@ -14,12 +14,12 @@ class cobra_jobregistry:
             password = os.environ['POSTGRES_PASSWORD']
         self.connection_string = f'host={host} dbname={database} user={user} password={password}'
         self.download_folder = download_folder
-        self.l = cobra_logging.Logger(self)
-        self.pg = cobra_postgres.PgInterface()
+        self.l = logging.Logger(self)
+        self.pg = pgi.PgInterface()
         self.init_database_structure()
 
     def __repr__(self):
-        return "cobra_jobregistry"
+        return "Jobregistry"
     def __str__(self):
         return "Registry for Jobs"
 
@@ -63,9 +63,9 @@ class cobra_jobregistry:
             ]
         }
         
-        dmf = cobra_datamodelfabric.DataModelFabric()
+        dmf = fabric.DataModelFabric()
         job_dm = dmf.create_from_dict(job_dm_dict)
-        dm_man = cobra_postgres.DataModelManager()
+        dm_man = pgi.DataModelManager()
         dm_man.add_datamodel(job_dm)
         dm_man.apply_datamodel('jobs')
 
@@ -138,3 +138,15 @@ class cobra_jobregistry:
         self.l.debug(f'Returning {len(job_list)} jobs')
 
         return job_list
+
+    def delete_all_jobs(self):
+
+        sql_statements = ['DELETE FROM jobs.jobs','DELETE FROM jobs.shape2pg','DELETE FROM jobs.osm2pg']
+
+        with self.pg.get_connection() as conn:
+            
+            with conn.cursor() as curs:
+                
+                for sql in sql_statements:
+                    curs.execute(sql)
+                    conn.commit()
