@@ -49,9 +49,9 @@ spec:
           ports:
             - containerPort: 8888
           command: ["start-notebook.sh"]
-          args:
-            - '--NotebookApp.token={{ password }}'
-          #args: ["--NotebookApp.token=''"]
+          #args:
+          #  - '--NotebookApp.token={{ password }}'
+          args: ["--NotebookApp.token={{ password }}"]
           #envFrom:
           #  - configMapRef:
           #      name: postgres-config

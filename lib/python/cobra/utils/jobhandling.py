@@ -91,7 +91,7 @@ class Jobmanager():
             
             return pd.DataFrame([a_job.values_as_list() for a_job in job_list], columns = ['UUID','Name','Job Type','Date created','Date started','Date finished','Priority','Status'])
     
-    def create_job_from_dataset(self, dataset):
+    def create_job_from_dataset(self, dataset, schema='gis'):
 
         self.l.debug('create_job_from_dataset')
 
@@ -101,7 +101,7 @@ class Jobmanager():
             data_file = dataset['File']
             path = dataset['Path']
 
-            self.create_new_shape_to_pg(f'{path}/{data_file}', f'Load shape from {dataset_name}')
+            self.create_new_shape_to_pg(f'{path}/{data_file}', f'Load shape from {dataset_name}', schema=schema)
 
         elif dataset['Type'] == 'OSM PBF':
 
@@ -109,7 +109,7 @@ class Jobmanager():
             data_file = dataset['File']
             path = dataset['Path']
 
-            self.create_new_osm_to_pg(f'{path}/{data_file}', f'Load OSM from {dataset_name}')
+            self.create_new_osm_to_pg(f'{path}/{data_file}', f'Load OSM from {dataset_name}', schema=schema)
         
         else:
 
@@ -117,7 +117,7 @@ class Jobmanager():
 
 
 
-    def create_new_shape_to_pg(self, path, job_name = None, skip_failures = None, priority = None):
+    def create_new_shape_to_pg(self, path, job_name = None, skip_failures = None, priority = None, schema='gis'):
         
         self.l.debug(f'create_new_shape_to_pg ({path})')
 
@@ -126,7 +126,9 @@ class Jobmanager():
             
             raise Exception(f'File {path} does not exist')
         
-        body = {'path' : path}
+        body = {'path' : path,
+            'schema' : schema }
+
         if job_name != None:
             body['job_name'] = job_name
         if skip_failures != None:
@@ -139,7 +141,7 @@ class Jobmanager():
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')
 
-    def create_new_osm_to_pg(self, path_to_osm, job_name = None, priority = None, style='default.style'):
+    def create_new_osm_to_pg(self, path_to_osm, job_name = None, priority = None, style='default.style', schema='gis'):
 
         self.l.debug(f'create_new_osm_to_pg ({path_to_osm})')
 
@@ -155,7 +157,8 @@ class Jobmanager():
 
         body = {
             'path_to_osm' : path_to_osm,
-            'style' : style
+            'style' : style,
+            'schema' : schema
             }
 
         if job_name != None:

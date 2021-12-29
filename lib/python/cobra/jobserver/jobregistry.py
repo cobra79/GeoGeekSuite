@@ -49,7 +49,9 @@ class Jobregistry:
                     'fields':[
                         {'name':'id','type':'UUID PRIMARY KEY'},
                         {'name':'path_to_shape', 'type':'VARCHAR (255) NOT NULL'},
-                        {'name':'skip_failures', 'type':'BOOLEAN'}
+                        {'name':'skip_failures', 'type':'BOOLEAN'},
+                        {'name':'target_schema', 'type':'VARCHAR (128)'}
+
                     ]
                 },
                 {
@@ -57,7 +59,8 @@ class Jobregistry:
                     'fields':[
                         {'name':'id','type':'UUID PRIMARY KEY'},
                         {'name':'path_to_osm', 'type':'VARCHAR (255) NOT NULL'},
-                        {'name':'style', 'type':'VARCHAR (32)'}
+                        {'name':'style', 'type':'VARCHAR (32)'},
+                        {'name':'target_schema', 'type':'VARCHAR (128)'}
                     ]
                 }
             ]
@@ -69,7 +72,7 @@ class Jobregistry:
         dm_man.add_datamodel(job_dm)
         dm_man.apply_datamodel('jobs')
 
-    def create_shape2pg_job(self, path_to_shape, job_name=None, skip_failures=True, priority=42):
+    def create_shape2pg_job(self, path_to_shape, job_name=None, skip_failures=True, priority=42, schema='gis'):
     
         self.l.debug('create_shape2pg_job')
 
@@ -83,11 +86,11 @@ class Jobregistry:
         self.pg.insert_into_table('jobs','jobs',keys, values)
 
         #Update shape2pg table
-        keys = ['id','path_to_shape','skip_failures']
-        values = [[job_id, path_to_shape, str(skip_failures)]]
+        keys = ['id','path_to_shape','skip_failures','target_schema']
+        values = [[job_id, path_to_shape, str(skip_failures), schema]]
         self.pg.insert_into_table('jobs','shape2pg',keys, values)  
 
-    def create_osm2pg_job(self, path_to_osm, style, job_name=None, priority=42):
+    def create_osm2pg_job(self, path_to_osm, style, job_name=None, priority=42, schema='gis'):
 
         self.l.debug('create_osm2pg_job')
 
@@ -101,8 +104,8 @@ class Jobregistry:
         self.pg.insert_into_table('jobs','jobs',keys, values)
 
         #Update shape2pg table
-        keys = ['id','path_to_osm','style']
-        values = [[job_id, path_to_osm, style]]
+        keys = ['id','path_to_osm','style','target_schema']
+        values = [[job_id, path_to_osm, style, schema]]
         self.pg.insert_into_table('jobs','osm2pg',keys, values)
 
     def get_jobs(self, job_type=None, status=None):

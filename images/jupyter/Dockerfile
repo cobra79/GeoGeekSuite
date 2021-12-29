@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:notebook-6.4.6
+FROM jupyter/scipy-notebook:notebook-6.4.6
 
 USER root
 
@@ -13,8 +13,10 @@ RUN apt-get update \
     && apt install gdal-bin -y \
     && apt install unzip -y \
     && apt install osm2pgsql -y
+    
 
 USER jovyan
 RUN pip3 install ipyleaflet && \
  conda install psycopg2 && \
- pip3 install pandas
+ pip3 install pandas && \
+ conda install geopandas -y

@@ -1,12 +1,14 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-017
+image_version: dev-0.0.1-022
 elasticsearch:
   registry: 'docker.elastic.co/elasticsearch'
   image: 'elasticsearch'
   tag: '7.16.0'
 gdal:
   ubuntu_version: '20.04'
+osm2pg:
+  ubuntu_version: '21.10'
 geodatabase:
   dbname: postgres
   dbadmin: postgres
@@ -22,7 +24,8 @@ geodatabase:
 jobregistry:
   ubuntu_version: '20.04'
 jupyter:
-  base_image: jupyter/base-notebook
+  #base_image: jupyter/base-notebook
+  base_image: jupyter/scipy-notebook
   base_image_version: 'notebook-6.4.6'
   pw: '{{ password }}'
 kibana:

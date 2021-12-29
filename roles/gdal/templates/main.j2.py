@@ -6,7 +6,7 @@ l = logging.Logger('GDAL Flask')
 l.debug('Start Cobra Logging')
 
 #TODO: Schema handling
-gdal.Gdal(schema='gis', run_in_loop=True)
+gdal.Gdal(run_in_loop=True)
 
 
 @app.route('/')

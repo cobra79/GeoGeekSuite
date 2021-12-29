@@ -31,9 +31,10 @@ def shape_to_pg_job():
         job_name = data_or_default('job_name',data,None)
         skip_failures = bool(data_or_default('skip_failures',data,True))
         priority = int(data_or_default('priority',data,42))
+        schema = data_or_default('schema',data, 'gis')
         
         #TODO: Check/fix skip_failures
-        reg.create_shape2pg_job(path, job_name=job_name, priority=priority, skip_failures=skip_failures)
+        reg.create_shape2pg_job(path, job_name=job_name, priority=priority, skip_failures=skip_failures, schema=schema)
         l.info('jobcreated')
     except Exception as inst:
         l.error("job failed", inst)
@@ -53,9 +54,10 @@ def osm_to_pg_job():
         style = data_or_default('style',data, "default.style")
         job_name = data_or_default('job_name',data,None)
         priority = int(data_or_default('priority',data,42))
+        schema = data_or_default('schema',data, 'gis')
         
         #TODO: Check/fix skip_failures
-        reg.create_osm2pg_job(path_to_osm, job_name=job_name, priority=priority, style=style)
+        reg.create_osm2pg_job(path_to_osm, job_name=job_name, priority=priority, style=style, schema=schema)
         l.info('jobcreated')
     except Exception as inst:
         l.error("job failed", inst)

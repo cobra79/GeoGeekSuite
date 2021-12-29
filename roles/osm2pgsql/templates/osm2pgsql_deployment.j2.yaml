@@ -29,6 +29,20 @@ spec:
             value: DEBUG
           - name: PYTHONPATH
             value: /opt/cobra-python-packages
+          ## PG Environment variables
+          - name: PGHOST
+            value: postgres
+          - name: PGPORT
+            value: '5432'
+          - name: PGDATABASE
+            value: postgres
+          - name: PGUSER
+            value: postgres
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pg-secret
+                key: POSTGRES_PASSWORD
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 80

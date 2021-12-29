@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:{{osm2pg.ubuntu_version}}
 ENV DEBIAN_FRONTEND=noninteractive 
 
 RUN apt-get update && apt-get install -y apt-transport-https

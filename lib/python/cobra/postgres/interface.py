@@ -122,7 +122,7 @@ class PgInterface():
     def create_schema(self, schema_name, switch_to_schema = False):
         
         self.l.info(f'create schema {schema_name}')
-        sql = f'CREATE SCHEMA IF NOT EXISTS {schema_name}'
+        sql = f'CREATE SCHEMA IF NOT EXISTS {schema_name.lower()}'
         result = self.__execute_sql__(sql)
         if switch_to_schema:
             self.switch_schema(schema_name)
@@ -173,6 +173,7 @@ class PgInterface():
         sql = f'DROP TABLE IF EXISTS {table_definition.name}'
         self.l.debug(sql)
         self.__execute_sql__(sql, fetch='none')
+
 
     def insert_into_table(self, schema, table, key_list, value_list):
 
