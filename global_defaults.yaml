@@ -1,6 +1,6 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-022
+image_version: dev-0.0.1-024
 elasticsearch:
   registry: 'docker.elastic.co/elasticsearch'
   image: 'elasticsearch'
@@ -38,3 +38,7 @@ pgadmin:
 webhoster:
   image: 'httpd'
   tag: '2.4'
+geoserver:
+  version: 2.20.1
+  java_image: openjdk
+  java_image_version: 11

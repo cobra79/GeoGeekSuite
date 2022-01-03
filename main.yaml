@@ -38,4 +38,7 @@
        tags: jobregistry }
   - { role: webhoster,
        tags: webhoster }
+  - { role: geoserver,
+       tags: geoserver }
+
 

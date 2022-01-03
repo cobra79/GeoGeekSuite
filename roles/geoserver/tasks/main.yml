@@ -1,0 +1,38 @@
+---
+# tasks file for geoserver
+- name: Make sure dockerfile folder exits
+  file:
+    path: '{{ image_files }}/geoserver'
+    state: directory
+- name: Render Geoserver Imagefile
+  template:
+    src: Dockerfile.j2
+    dest: '{{ image_files }}/geoserver/Dockerfile'
+- name: Create Geoserver Image
+  shell:
+    cmd: 'docker image build . -t cobra_geoserver:{{image_version}}'
+    chdir: '{{ image_files }}/geoserver'
+- name: Tag image (repo only)
+  shell:
+    cmd: 'docker tag cobra_geoserver:{{ image_version }} {{ repository }}/cobra_geoserver:{{ image_version }}'
+  when: repository is defined
+- name: Push Image to repo 
+  shell:
+    cmd: 'docker push {{ repository }}/cobra_geoserver:{{ image_version }}'
+  when: repository is defined
+- name: Render Deployment Manifest
+  template:
+    src: geoserver_deployment.j2.yaml
+    dest: '{{ manifest_folder }}/geoserver_deployment.yaml'
+- name: Apply Deployment Manifest
+  shell:
+    cmd: 'kubectl create -f geoserver_deployment.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'
+- name: Render Geoserver Service Definition
+  template:
+    src: geoserver_service.j2.yaml
+    dest: '{{ manifest_folder }}/geoserver_service.yaml'
+- name: Create Service
+  shell:
+    cmd: 'kubectl apply -f geoserver_service.yaml -n {{ gisnamespace }}'
+    chdir: '{{ manifest_folder }}'

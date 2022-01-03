@@ -1,0 +1,8 @@
+FROM {{geoserver.java_image}}:{{geoserver.java_image_version}}
+
+WORKDIR /usr/share/geoserver
+RUN wget https://sourceforge.net/projects/geoserver/files/GeoServer/{{geoserver.version}}/geoserver-{{geoserver.version}}-bin.zip
+RUN unzip geoserver-{{geoserver.version}}-bin.zip
+
+WORKDIR /usr/share/geoserver/bin
+CMD sh startup.sh

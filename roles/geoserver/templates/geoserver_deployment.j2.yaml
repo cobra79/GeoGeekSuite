@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geoserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: geoserver
+  template:
+    metadata:
+      labels:
+        app: geoserver
+    spec:
+      containers:
+        - name: geoserver
+          env:
+          - name: GEOSERVER_HOME
+            value: '/usr/share/geoserver'
+{% if repository is undefined %}
+          image: 'cobra_geoserver:{{ image_version }}'
+{% else %}
+          image: '{{ repository }}/cobra_geoserver:{{ image_version }}'
+{% endif %}
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 8080
