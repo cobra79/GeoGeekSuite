@@ -25,6 +25,10 @@ storage:
   type: local
   path: '{{ storage_base }}/styles'
   size: 5M
+- name: geoserver
+  type: local
+  path: '{{ storage_base }}/geoserver'
+  size: 50M
 deployments:
 - name: postgres
   replicas: 1

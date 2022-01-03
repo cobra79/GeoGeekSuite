@@ -17,6 +17,8 @@ spec:
           env:
           - name: GEOSERVER_HOME
             value: '/usr/share/geoserver'
+          - name: GEOSERVER_ADMIN_PASSWORD
+            value: '{{ password }}'
 {% if repository is undefined %}
           image: 'cobra_geoserver:{{ image_version }}'
 {% else %}
@@ -25,3 +27,11 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: geoserver-data
+              mountPath: /geoserver
+              # '/usr/share/geoserver'
+      volumes:
+        - name: geoserver-data
+          persistentVolumeClaim:
+            claimName: geoserver-claim
