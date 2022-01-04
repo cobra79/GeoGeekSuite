@@ -50,7 +50,7 @@ class Filemanager():
         with zipfile.ZipFile(f'/download/{dataset_name}/{filename}', 'r') as zip_ref:
             zip_ref.extractall(f'/download/{dataset_name}')
             
-    def get_data(self):
+    def get_data(self, datatype=None):
     
         '''
         Get a table of datasets present on the system
@@ -71,7 +71,15 @@ class Filemanager():
                     size = self.get_size(f'{folder}/{a_file}')
                 data_list.append([data_type, name, a_file, folder, size])
                 
-        return pd.DataFrame(data_list, columns=['Type','Dataset','File','Path','Size (MB)'])
+        df = pd.DataFrame(data_list, columns=['Type','Dataset','File','Path','Size (MB)'])
+
+        if datatype == None:
+
+            return df
+        
+        else:
+
+            return df[df['Type'] == datatype]
         
             
     def get_datasets(self):
