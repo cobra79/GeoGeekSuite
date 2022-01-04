@@ -91,7 +91,7 @@ class Jobmanager():
             
             return pd.DataFrame([a_job.values_as_list() for a_job in job_list], columns = ['UUID','Name','Job Type','Date created','Date started','Date finished','Priority','Status'])
     
-    def create_job_from_dataset(self, dataset, schema='gis'):
+    def create_import_job_from_dataset(self, dataset, schema='gis'):
 
         self.l.debug('create_job_from_dataset')
 

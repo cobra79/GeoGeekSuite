@@ -47,7 +47,7 @@ class Geodatamanager():
 
         self.l.debug('estimate table size')
         sql = f"SELECT reltuples::bigint AS estimate FROM pg_class WHERE oid = '{schema}.{table}'::regclass;"
-        res = self.__execute_sql__(sql, fetch='one')
+        res = self.pg.__execute_sql__(sql, fetch='one')
         return res[0]
 
     def get_geometry_columns(self, schema, table):
