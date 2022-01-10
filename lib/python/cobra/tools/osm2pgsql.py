@@ -11,11 +11,10 @@ class Osm2PgSql():
     wrapper for osm2pgsql
     '''
 
-    def __init__(self, style="default.style", run_in_loop = False, schema=None):
+    def __init__(self, run_in_loop = False, schema=None):
 
         self.l = logging.Logger(self)
         self.l.debug("New osm2pgsql")
-        self.style = style
         self.busy = False
         
         self.pg = pgi.PgInterface()
@@ -57,15 +56,16 @@ class Osm2PgSql():
                     job_type = result[1]
                     self.l.debug(f'Found job {job_id} of type {job_type}')
 
-                    curs.execute(f"SELECT path_to_osm, target_schema FROM jobs.osm2pg WHERE id = '{job_id}'")
+                    curs.execute(f"SELECT path_to_osm, target_schema, style FROM jobs.osm2pg WHERE id = '{job_id}'")
                     result = curs.fetchone()
                     path_to_osm = result[0]
                     schema = result[1]
+                    style = result[2]
                     
-                    self.l.debug(f'Path for osm {path_to_osm}. Create in schema {schema}')
+                    self.l.debug(f'Path for osm {path_to_osm}. Create in schema {schema}, style: {style}')
                     self.update_job_status(job_id, 'Started')
 
-                    self.execute_osm2pgsql(path_to_osm, job_id, schema=schema)
+                    self.execute_osm2pgsql(path_to_osm, job_id, schema=schema, style=style)
 
                 else:
                     self.l.debug('No Waining jobs in queue')
@@ -91,7 +91,7 @@ class Osm2PgSql():
                 curs.execute(sql)
     
     
-    def execute_osm2pgsql(self, path_to_pbf, job_id, schema='gis', cache=None):
+    def execute_osm2pgsql(self, path_to_pbf, job_id, style, schema='gis', cache=None):
 
         self.l.debug("execute_osm2pgsql")
 
@@ -109,7 +109,7 @@ class Osm2PgSql():
         try:
             
             #args =['osm2pgsql','-c','-d', self.connection_string, '-S', f'{self.style}', path_to_pbf]
-            args =['osm2pgsql','-c','-S', f'/styles/{self.style}', f'--output-pgsql-schema={schema}', path_to_pbf]
+            args =['osm2pgsql','-c','-S', f'/styles/{style}', f'--output-pgsql-schema={schema}', path_to_pbf]
             
             if cache != None:
                 args.append(f'--cache {str(cache)}')
