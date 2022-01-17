@@ -142,7 +142,9 @@ todo.md
 /data/jupyter/.local/
 /data/jupyter/.wget-hsts
 /data/jupyter/*
+!/data/jupyter/Readme.md
 !/data/jupyter/samples
+!/data/jupyter/Samples
 /data/jupyter/samples/.ipynb_checkpoints
 !/data/jupyter/WorkInProgress
 /data/jupyter/WorkInProgress/.ipynb_checkpoints

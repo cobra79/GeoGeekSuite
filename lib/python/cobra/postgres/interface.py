@@ -201,8 +201,6 @@ class PgInterface():
 
         self.__execute_sql__(sql, fetch='none')
 
- 
-
 class DataModelManager():
     
     '''
@@ -255,12 +253,6 @@ class DataModelManager():
         self.l.info(f'Remove datamodel {name}')
         dm = self.data_models[name]
         self.db_interface.drop_schema(dm.schema)
-
-        
-
-        #for a_table_key in dm.table_definitions:
-         #   a_table = dm.table_definitions[a_table_key]
-          #  self.db_interface.drop_table(a_table)
 
 class DataModelFabric():
     
@@ -303,63 +295,6 @@ class DataLoader():
     def load_from_dict(self, data_dict):
         
         self.db_interface.insert_into_table(data_dict['schema'],data_dict['table'],data_dict['keys'],data_dict['values'])
-
-
-
-class DataModelManager():
-    
-    '''
-    Class to manage datamodels
-    can be used to apply a definition and create tables
-    or remove tables from postgres
-    '''
-    
-    def __init__(self):
-        
-        self.l = logging.Logger(self)
-        self.l.info('New DataModelManager')
-        self.data_models = {}
-        self.db_interface = PgInterface()
-     
-    def add_datamodel(self, datamodel:DataModelDefinition):
-        
-        self.l.info(f'add datamodel {datamodel.name}')
-        
-        self.data_models[datamodel.name] = datamodel
-        
-    def get_datamodel_names(self):
-        
-        return self.data_models.keys()
-        
-    def apply_datamodel(self, name):
-        '''
-        Create all tables defined in the datamodel
-        '''
-        self.l.info(f'apply datamodel {name}')
-        
-        dm = self.data_models[name]
-
-        self.l.debug(f'schema: {dm.schema}')
-        self.db_interface.create_schema(dm.schema)
-
-        for a_table_key in dm.table_definitions:
-            a_table = dm.table_definitions[a_table_key]
-            self.db_interface.create_table(a_table, schema=dm.schema)
-            
-            #print(dm.table_definitions[a_table].name)
-            #for a_field_key in dm.table_definitions[a_table].field_definitions:
-            #    a_field = dm.table_definitions[a_table].field_definitions[a_field_key]
-            #    print(f' - {a_field.name}  {a_field.type}')
-            
-    def remove_datamodel(self, name):
-        '''
-        Removes all tables from the database that are defined in the datamodel
-        '''
-        self.l.info(f'Remove datamodel {name}')
-        dm = self.data_models[name]
-        self.db_interface.drop_schema(dm.schema)
-
-
 
 
 

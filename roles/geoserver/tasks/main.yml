@@ -4,6 +4,14 @@
   file:
     path: '{{ image_files }}/geoserver'
     state: directory
+- name: Render user.xml
+  template:
+    src: users.j2.xml
+    dest: '{{ image_files }}/geoserver/users.xml'
+- name: Render roles.xml
+  template:
+    src: roles.j2.xml
+    dest: '{{ image_files }}/geoserver/roles.xml'
 - name: Render Geoserver Imagefile
   template:
     src: Dockerfile.j2
