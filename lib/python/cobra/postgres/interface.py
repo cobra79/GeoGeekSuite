@@ -78,7 +78,7 @@ class PgInterface():
     
     def get_connection(self):
 
-        self.l.debug('Provide PG connection')
+        self.l.silly('Provide PG connection')
         return psycopg2.connect(self.conn_string)
 
     def switch_schema(self, schema_name):

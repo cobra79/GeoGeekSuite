@@ -1,12 +1,17 @@
+#TODO: Rename Gdal to shape2pgsql
+
 import os
 import cobra.helper.logging as logging
 import os.path
 import cobra.postgres.interface as pgi
 import time
 import subprocess
+
 class Gdal:
     '''
-    Wrapper for GDAL
+    Little bit more than a wrapper for GDAL...
+    The Gdal class impletments a process that is intended to run inside a container.
+    Purpose is to pickup jobs (that require gdal) and execute them.
     '''
     def __init__(self, download_folder='./downloads', host='postgres', database='postgres',user='postgres', schema=None, run_in_loop=False):
         
@@ -49,13 +54,13 @@ class Gdal:
 
     def pick_a_job_when_not_busy(self):
 
-        self.l.debug('pick_a_job_when_not_busy')
+        self.l.silly('pick_a_job_when_not_busy')
         if self.busy == False:
             self.pick_a_job()
 
     def pick_a_job(self):
 
-        self.l.debug('pick_a_job')
+        self.l.silly('pick_a_job')
        
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
@@ -66,7 +71,7 @@ class Gdal:
                     job_type = result[1]
                     self.l.debug(f'Found job {job_id} of type {job_type}')
                 else:
-                    self.l.debug('No Waining jobs in queue')
+                    self.l.silly('No Waining jobs in queue')
                     job_type = None
 
                 if job_type == 'shape2pg':

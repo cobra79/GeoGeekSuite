@@ -56,7 +56,7 @@ class Logger(object):
 
     def info(self, message):
 
-        if self.level == 'INFO' or self.level == 'DEBUG':
+        if self.level == 'INFO' or self.level == 'DEBUG' or self.level == 'SILLY':
 
             log_body = self._get_base_body_()
             log_body['type'] = 'INFO'
@@ -66,12 +66,23 @@ class Logger(object):
 
     def debug(self, message):
 
-        if self.level == 'DEBUG':
+        if self.level == 'DEBUG' or self.level == 'SILLY':
 
             log_body = self._get_base_body_()
             log_body['type'] = 'DEBUG'
             log_body['message'] = message
   
             self._send_log_(log_body)
+
+    def silly(self, message):
+
+        if self.level == 'SILLY':
+
+            log_body = self._get_base_body_()
+            log_body['type'] = 'SILLY'
+            log_body['message'] = message
+  
+            self._send_log_(log_body)
+
             
         

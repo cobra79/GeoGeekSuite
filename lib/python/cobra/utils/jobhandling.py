@@ -173,3 +173,15 @@ class Jobmanager():
         
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')
+
+    #TODO: Schould be possible to filter
+    def delete_jobs(self):
+
+        self.l.debug('delete_jobs')
+
+        body = {}
+
+        r = requests.post('http://jobregistry:5000/delete', json=body)
+        
+        if r.status_code != 200:
+            raise Exception(f'job server has not accepted delete request (Status Code:{r.status_code})')

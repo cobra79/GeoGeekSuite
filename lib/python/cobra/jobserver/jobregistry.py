@@ -153,3 +153,5 @@ class Jobregistry:
                 for sql in sql_statements:
                     curs.execute(sql)
                     conn.commit()
+
+        return True

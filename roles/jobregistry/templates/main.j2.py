@@ -86,6 +86,20 @@ def get_jobs():
     finally:
         return jsonify(result_list)
 
+@app.route('/delete', methods=['POST'])
+def delete_jobs():
+    l.info('DELETE jobs')
+    data = request.json
+    
+    try:
+        result = reg.delete_all_jobs()
+    
+    except Exception as inst:
+        l.error('Could not delete jobs', inst)
+    
+    finally:
+        return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

@@ -8,10 +8,19 @@ import os
 class Osm2PgSql():
 
     '''
-    wrapper for osm2pgsql
+    Little bit more than a wrapper for GDAL...
+    The Osm2PgSql class impletments a process that is intended to run inside a container.
+    Purpose is to pickup jobs that use osm2pgsql to load OSM data.
     '''
 
     def __init__(self, run_in_loop = False, schema=None):
+
+        '''
+        Constructor
+        Within a container the class schould normally run a loop.
+        schema in the deprecated as it will be part of a job.
+        '''
+        #TODO: remove schema
 
         self.l = logging.Logger(self)
         self.l.debug("New osm2pgsql")
@@ -28,24 +37,38 @@ class Osm2PgSql():
 
     def __str__(self):
         
-        return "A wrapper for osm2pgsql"
+        return "Process that takes jobs and excecutes them with osm2pgsql"
 
     def _mainloop_(self):
 
+        '''
+        Infinite loop that checks in a devined interval for new jobs.
+        '''
+
         while True:
+
             self.pick_a_job_when_not_busy()
+            #TODO: Make sleeptime configurable
             time.sleep(10)
 
     def pick_a_job_when_not_busy(self):
 
-        self.l.debug('pick_a_job_when_not_busy')
+        '''
+        Check if busy, if not try a job - if available
+        '''
+
+        self.l.silly('pick_a_job_when_not_busy')
         if self.busy == False:
             self.pick_a_job()
 
 
     def pick_a_job(self):
 
-        self.l.debug('pick_a_job')
+        '''
+        Pick a job - if available
+        '''
+
+        self.l.silly('pick_a_job')
 
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
@@ -68,7 +91,7 @@ class Osm2PgSql():
                     self.execute_osm2pgsql(path_to_osm, job_id, schema=schema, style=style)
 
                 else:
-                    self.l.debug('No Waining jobs in queue')
+                    self.l.silly('No Waining jobs in queue')
                     job_type = None
 
                
@@ -99,9 +122,15 @@ class Osm2PgSql():
 
         self.pg.create_schema(schema)
 
-
+        
         if os.path.isfile(path_to_pbf) == False:
             self.l.error(f'File {path_to_pbf} does not exist')
+            self.update_job_status(job_id, 'Failed')
+            self.busy = False
+            return 
+
+        if os.path.isfile(style) == False:
+            self.l.error(f'Style {style} does not exist')
             self.update_job_status(job_id, 'Failed')
             self.busy = False
             return 
@@ -109,7 +138,8 @@ class Osm2PgSql():
         try:
             
             #args =['osm2pgsql','-c','-d', self.connection_string, '-S', f'{self.style}', path_to_pbf]
-            args =['osm2pgsql','-c','-S', f'/styles/{style}', f'--output-pgsql-schema={schema}', path_to_pbf]
+            self.l.info(f'run osm2pgsql, styple:{style}, schema:{schema}, path_to_pbf:{path_to_pbf}')
+            args =['osm2pgsql','-c','-S', f'/styles/{style}', f'--output-pgsql-schema={schema}', '--slim', path_to_pbf]
             
             if cache != None:
                 args.append(f'--cache {str(cache)}')
@@ -127,7 +157,7 @@ class Osm2PgSql():
         
         except Exception as e:
             self.update_job_status(job_id, 'Failed')
-            self.l.error(e)
+            self.l.error(f'Faild to execute osm2pgsql', e)
         finally:
             self.busy = False
 
