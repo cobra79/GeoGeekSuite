@@ -190,6 +190,7 @@ class PgInterface():
         for a_value_set in value_list:
             new_val_set = ''
             for a_val in a_value_set:
+                a_val = a_val.replace("'", "''")
                 new_val_set = new_val_set + "'" +a_val +"'" + ','
             new_val_set = new_val_set[:-1]
             new_val_set = f'({new_val_set})'

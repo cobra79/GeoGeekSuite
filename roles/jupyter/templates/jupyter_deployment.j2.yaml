@@ -64,6 +64,8 @@ spec:
               name: download
             - mountPath: /styles
               name: styles
+            - mountPath: /export
+              name: export
       volumes:
         - name: jupyter
           persistentVolumeClaim:
@@ -78,3 +80,6 @@ spec:
         - name: styles
           persistentVolumeClaim:
             claimName: styles-claim
+        - name: export
+          persistentVolumeClaim:
+            claimName: export-claim

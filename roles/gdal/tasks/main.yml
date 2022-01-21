@@ -35,14 +35,11 @@
     dest: '{{ manifest_folder }}/gdal_service.yaml'
 - name: Apply Deployment 
   shell:
-    cmd: 'kubectl create -f gdal_deployment.yaml -n {{ gisnamespace }}'
+    cmd: 'kubectl apply -f gdal_deployment.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
-  ignore_errors: true
 - name: Apply Service
   shell:
-    cmd: 'kubectl create -f gdal_service.yaml -n {{ gisnamespace }}'
+    cmd: 'kubectl apply -f gdal_service.yaml -n {{ gisnamespace }}'
     chdir: '{{ manifest_folder }}'
-  ignore_errors: true
-
 
 

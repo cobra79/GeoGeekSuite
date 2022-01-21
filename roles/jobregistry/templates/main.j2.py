@@ -65,6 +65,32 @@ def osm_to_pg_job():
     finally:
         return jsonify(data)
 
+@app.route('/pg_to_x_job', methods=['POST'])
+def pg_to_x_job():
+    l.info('POST pg_to_x')
+    data = request.json
+    
+    try:
+        l.debug(data)
+
+        sql = data['sql']
+        filename = data['filename']
+        format = data_or_default('format',data, "GeoJSON")
+        job_name = data_or_default('job_name',data,None)
+        priority = int(data_or_default('priority',data,42))
+
+        l.debug(f'reg.create_pg2x_job, sql:{sql} job_name:{job_name} priority:{priority} format:{format} filename:{filename}')
+        reg.create_pg2x_job(sql, job_name=job_name, priority=priority, format=format, filename=filename)
+        l.info('jobcreated')
+    except Exception as inst:
+        l.error("job failed", inst)
+        app.logger.error(inst)
+    finally:
+        return jsonify(data)
+
+
+
+
 @app.route('/jobs', methods=['GET'])
 def get_jobs():
     l.info('GET jobs')

@@ -5,6 +5,8 @@ window.onload = function() {
     var pgadminLink = document.getElementById("pgadminLink");
     var kibanaLink = document.getElementById("kibanaLink");
     var geoserverLink= document.getElementById("geoserverLink");
+    var exportLink= document.getElementById("exportLink");
+
 
     jupyterLink.onclick = function() {
         hostbase = document.location.host;
@@ -25,6 +27,12 @@ window.onload = function() {
     geoserverLink.onclick = function() {
         hostbase = document.location.host;
         fullpath = `http://geoserver.${hostbase}/geoserver/web/`;
+        window.location.href = fullpath;
+    }
+
+    exportLink.onclick = function() {
+        hostbase = document.location.host;
+        fullpath = `http://${hostbase}/export/`;
         window.location.href = fullpath;
     }
 

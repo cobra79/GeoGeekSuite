@@ -64,7 +64,7 @@ class Gdal:
        
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
-                curs.execute("SELECT id, job_type FROM jobs.jobs WHERE status = 'Waiting' AND job_type = 'shape2pg' ORDER BY priority, date_created LIMIT 1")
+                curs.execute("SELECT id, job_type FROM jobs.jobs WHERE (status = 'Waiting' AND job_type = 'shape2pg') OR (status = 'Waiting' AND job_type = 'pg2x')  ORDER BY priority, date_created LIMIT 1")
                 result = curs.fetchone()
                 if result != None:
                     job_id = result[0]
@@ -89,6 +89,22 @@ class Gdal:
                     else:
                         self.l.error(f'No details on Job')
                         self.update_job_status(job_id, 'Failed - no details')
+                elif job_type == 'pg2x':
+                    self.l.debug(f'pg2x job (job: {job_id})')
+                    curs.execute(f"SELECT sql, format, filename FROM jobs.pg2x WHERE id = '{job_id}'")
+                    result = curs.fetchone()
+                    self.l.debug(f'result: {result}')
+                    if result != None:
+                        self.l.silly(f'Found details {result}')
+                        sql = result[0]
+                        format = result[1]
+                        filename = result[2]
+                        self.update_job_status(job_id, 'Started')
+                        self.execute_pg2x(sql, format, filename, job_id)
+                    else:
+                        self.l.error(f'No details on Job')
+                        self.update_job_status(job_id, 'Failed - no details')
+
 
     def update_job_status(self, job_id, new_status):
         self.l.debug(f'update_job_status of {job_id}: Set to {new_status}')
@@ -104,6 +120,32 @@ class Gdal:
         with self.pg.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)
+
+    def execute_pg2x(self, sql, format, filename, job_id):
+
+        self.l.debug(f'execute_pg2sql sql:{sql}, format:{format}, filename:{filename}')
+        self.busy = True
+
+        try:
+            connection_string = self.get_connection_string()
+            args = ['ogr2ogr', '-f', format, f'/export/{filename}', f'PG: {connection_string}', '-sql', sql ]
+            return_value = subprocess.run(args)
+
+            if return_value.returncode == 0:
+                self.l.info(f'Job {job_id} - export to {filename} finished successfully')
+                self.update_job_status(job_id, 'Finished')
+                self.update_time(job_id, 'date_finished')
+            else: 
+                self.l.error(f'Error in {job_id} - export {filename} failed')
+                self.l.error(return_value.stderr)
+                self.update_job_status(job_id, 'Failed')
+        except Exception as e:
+            self.update_job_status(job_id, 'Failed')
+            self.l.error(e)
+        finally:
+            self.busy = False
+
+             
 
     def execute_shape2pg(self, path_to_shape, job_id, skip_failures=True, schema=None):
 
@@ -125,8 +167,6 @@ class Gdal:
 
         try:
             connection_string = self.get_connection_string()
-            self.l.debug(f'connect string {connection_string}')
-            self.l.debug(f'SCHEMA={self.schema}')
             args =['ogr2ogr','-f','PostgreSQL',f'PG: {connection_string}', '-lco', f'SCHEMA={self.schema}', path_to_shape]
             if skip_failures:
                 args.append('-skipfailures')
@@ -137,7 +177,7 @@ class Gdal:
                 self.update_job_status(job_id, 'Finished')
                 self.update_time(job_id, 'date_finished')
             else: 
-                self.l.error(f'Error in {job_id} - loading {path_to_shape} finished')
+                self.l.error(f'Error in {job_id} - loading {path_to_shape} failed')
                 self.l.error(return_value.stderr)
                 self.update_job_status(job_id, 'Failed')
         except Exception as e:

@@ -174,6 +174,25 @@ class Jobmanager():
         if r.status_code != 200:
             raise Exception(f'job server has not accepted the job')
 
+    def create_new_pg_to_x(self, sql, format, filename, job_name = None, priority = None):
+        
+        self.l.debug(f'create_new_pg_to_x ({sql} to {format})')
+
+        body = {'sql' : sql,
+            'format' : format,
+            'filename' : filename }
+
+        if job_name != None:
+            body['job_name'] = job_name
+
+        if priority != None:
+            body['priority'] = priority
+    
+        r = requests.post('http://jobregistry:5000/pg_to_x_job', json=body)
+        
+        if r.status_code != 200:
+            raise Exception(f'job server has not accepted the job (status: {r.status_code})')
+
     #TODO: Schould be possible to filter
     def delete_jobs(self):
 

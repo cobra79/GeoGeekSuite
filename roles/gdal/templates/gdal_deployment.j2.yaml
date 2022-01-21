@@ -26,7 +26,7 @@ spec:
                 name: pg-secret
                 key: POSTGRES_PASSWORD
           - name: LOG_LEVEL
-            value: DEBUG
+            value: SILLY
           - name: PYTHONPATH
             value: /opt/cobra-python-packages
           imagePullPolicy: "IfNotPresent"
@@ -38,6 +38,8 @@ spec:
               name: devlibs
             - mountPath: /download
               name: download
+            - mountPath: /export
+              name: export
       volumes:
         - name: devlibs
           hostPath:
@@ -46,4 +48,7 @@ spec:
         - name: download
           persistentVolumeClaim:
             claimName: download-claim
+        - name: export
+          persistentVolumeClaim:
+            claimName: export-claim
  

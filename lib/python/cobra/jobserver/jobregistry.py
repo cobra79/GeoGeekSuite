@@ -62,6 +62,15 @@ class Jobregistry:
                         {'name':'style', 'type':'VARCHAR (32)'},
                         {'name':'target_schema', 'type':'VARCHAR (128)'}
                     ]
+                },
+                {
+                    'tablename':'pg2x',
+                    'fields':[
+                        {'name':'id','type':'UUID PRIMARY KEY'},
+                        {'name':'sql', 'type':'VARCHAR NOT NULL'},
+                        {'name':'format', 'type':'VARCHAR (64)'},
+                        {'name':'filename', 'type':'VARCHAR (64)'}
+                    ]
                 }
             ]
         }
@@ -107,6 +116,24 @@ class Jobregistry:
         keys = ['id','path_to_osm','style','target_schema']
         values = [[job_id, path_to_osm, style, schema]]
         self.pg.insert_into_table('jobs','osm2pg',keys, values)
+
+    def create_pg2x_job(self, sql, format, filename, job_name=None, priority=42):
+
+        self.l.debug(f'create_pg2x_job sql:{sql} format:{format}')
+
+        job_id = str(uuid.uuid4())
+        if job_name == None:
+            job_name = 'Export PG'
+
+        #Update Jobs
+        keys = ['id','name','job_type','status','priority']
+        values = [[job_id, job_name,'pg2x','Waiting', str(priority)]]
+        self.pg.insert_into_table('jobs','jobs',keys, values)
+
+        #Update shape2pg table
+        keys = ['id','sql','format', 'filename']
+        values = [[job_id, sql, format, filename]]
+        self.pg.insert_into_table('jobs','pg2x',keys, values)
 
     def get_jobs(self, job_type=None, status=None):
 

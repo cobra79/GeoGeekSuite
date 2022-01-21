@@ -21,10 +21,15 @@ spec:
           volumeMounts:
             - mountPath: /usr/local/apache2/htdocs/
               name: webroot
+            - mountPath: /usr/local/apache2/htdocs/export
+              name: export
       volumes:
         - name: webroot
           hostPath:
             path: '{{ project_folder }}/web'
             type: DirectoryOrCreate
+        - name: export
+          persistentVolumeClaim:
+            claimName: export-claim
 
  
