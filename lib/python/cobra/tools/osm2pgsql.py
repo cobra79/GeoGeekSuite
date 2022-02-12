@@ -129,11 +129,11 @@ class Osm2PgSql():
             self.busy = False
             return 
 
-        if os.path.isfile(style) == False:
-            self.l.error(f'Style {style} does not exist')
-            self.update_job_status(job_id, 'Failed')
-            self.busy = False
-            return 
+        #if os.path.isfile(f'/styles/style') == False:
+        #    self.l.error(f'Style /styles/{style} does not exist')
+        #    self.update_job_status(job_id, 'Failed')
+        #    self.busy = False
+        #    return 
 
         try:
             

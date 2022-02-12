@@ -4,6 +4,8 @@ import logging
 import requests
 import datetime
 import socket
+from elasticsearch import Elasticsearch
+
 class Logger(object):
     '''
     Logging class for Python
@@ -83,6 +85,30 @@ class Logger(object):
             log_body['message'] = message
   
             self._send_log_(log_body)
+
+
+    # This one is just for unit testing
+    def in_recent_logs(self, classname, searchstring, searchlength = 10):
+    
+        elastic_client = Elasticsearch(hosts=["http://elastic:9200"])
+
+        query = {
+                "match": {
+                    "class": classname
+                    }
+                }
+        #query_body = {
+        #      "size": searchlength,
+        #      "query": query
+        #    }
+        results = elastic_client.search(index="python_logs*", query=query, size=searchlength)
+        results = results['hits']['hits']
+        hit = False
+        for a_result in results:
+            message = a_result['_source']['message']
+            if message == searchstring:
+                hit = True
+        return hit
 
             
         

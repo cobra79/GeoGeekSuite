@@ -7,7 +7,10 @@ RUN apt update
 RUN apt install gdal-bin -y
 RUN apt install -y python3-pip
 RUN pip3 install flask
-RUN pip3 install psycopg2-binary
+#RUN pip3 install psycopg2-binary
+{% for package in python.pip_common %}
+RUN pip3 install {{ package }}
+{% endfor %}
 
 WORKDIR /opt/gdal
 COPY main.py main.py

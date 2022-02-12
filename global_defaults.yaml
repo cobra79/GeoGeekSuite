@@ -1,6 +1,11 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-029
+image_version: dev-0.0.1-031
+python:
+  pip_common:
+  - psycopg2-binary
+  - requests
+  - elasticsearch
 elasticsearch:
   registry: 'docker.elastic.co/elasticsearch'
   image: 'elasticsearch'

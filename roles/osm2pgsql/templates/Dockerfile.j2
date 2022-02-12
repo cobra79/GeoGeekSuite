@@ -9,8 +9,11 @@ RUN apt-get install osm2pgsql -y
 #RUN apt install osm2pgsql -y
 RUN apt install python3-pip -y
 RUN pip3 install flask
-RUN pip3 install psycopg2-binary
-RUN pip3 install requests
+#RUN pip3 install psycopg2-binary
+#RUN pip3 install requests
+{% for package in python.pip_common %}
+RUN pip3 install {{ package }}
+{% endfor %}
 
 WORKDIR /opt/osm2pgsql
 COPY main.py main.py

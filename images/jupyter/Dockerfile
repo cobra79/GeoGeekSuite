@@ -9,14 +9,19 @@ RUN apt-get update \
         pkg-config \
         software-properties-common \
     && LANG=C.UTF-8 add-apt-repository -y ppa:ubuntugis/ppa \
-    && apt update \
-    && apt install gdal-bin -y \
-    && apt install unzip -y \
-    && apt install osm2pgsql -y
+    && apt update
+ #   && apt install gdal-bin -y \
+ #   && apt install unzip -y \
+ #   && apt install osm2pgsql -y
     
 
 USER jovyan
 RUN pip3 install ipyleaflet && \
- conda install psycopg2 && \
- pip3 install pandas && \
- conda install geopandas -y
+    pip3 install pandas && \
+    conda install geopandas -y
+
+RUN pip3 install psycopg2-binary
+RUN pip3 install requests
+RUN pip3 install elasticsearch
+# conda install psycopg2 
+ 

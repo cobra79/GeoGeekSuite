@@ -1,14 +1,17 @@
 FROM ubuntu:{{ jobregistry.ubuntu_version }}
 
 RUN apt update
-#RUN apt install software-properties-common -y
-#RUN add-apt-repository ppa:ubuntugis/ppa
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:ubuntugis/ppa
 RUN apt update
-#RUN apt install gdal-bin -y
+RUN apt install gdal-bin -y
 RUN apt install -y python3-pip
 RUN pip3 install flask
-RUN pip3 install psycopg2-binary
-RUN pip3 install requests
+# RUN pip3 install psycopg2-binary
+# RUN pip3 install requests
+{% for package in python.pip_common %}
+RUN pip3 install {{ package }}
+{% endfor %}
 
 WORKDIR /opt/gdal
 COPY main.py main.py
