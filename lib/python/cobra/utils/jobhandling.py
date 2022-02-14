@@ -94,7 +94,8 @@ class Jobmanager():
     def create_import_job_from_dataset(self, dataset, schema='gis', style=None):
 
         self.l.debug('create_job_from_dataset')
-
+        print('create_import_job_from_dataset')
+        print(dataset['Type'])
         if dataset['Type'] == 'Shape':
 
             dataset_name = dataset['Dataset']

@@ -55,7 +55,6 @@ class Logger(object):
 
         self._send_log_(log_body)
 
-
     def info(self, message):
 
         if self.level == 'INFO' or self.level == 'DEBUG' or self.level == 'SILLY':
@@ -88,7 +87,7 @@ class Logger(object):
 
 
     # This one is just for unit testing
-    def in_recent_logs(self, classname, searchstring, searchlength = 10):
+    def in_recent_logs(self, classname, searchstring, searchlength = 100):
     
         elastic_client = Elasticsearch(hosts=["http://elastic:9200"])
 
