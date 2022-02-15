@@ -47,3 +47,8 @@ geoserver:
   version: 2.20.1
   java_image: openjdk
   java_image_version: 11
+# Databases
+default_db:
+  operations: 'operations'
+  geodata: 'gis'
+  testgeodata: 'test'

@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import cobra.helper.logging as logging
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class FieldDefinition():
     '''
@@ -70,10 +71,11 @@ class PgInterface():
     '''
     Base class to interact with the Postgres Database
     '''
-    def __init__(self, database='postgres'):
+    def __init__(self, database='postgres', schema='public'):
         self.l = logging.Logger(self)
         self.database = database
         self.password = os.environ['POSTGRES_PASSWORD']
+        self.current_schema = schema
         self.conn_string = f"host='postgres' dbname='{self.database}' user='postgres' password='{self.password}'"
     
     def get_connection(self):
@@ -84,8 +86,10 @@ class PgInterface():
     def switch_schema(self, schema_name):
 
         self.l.debug(f'Switch schema to {schema_name}')
-        sql = f"SET search_path TO {schema_name}"
-        self.__execute_sql__(sql)
+        #TODO: Check if Schema exists
+        self.current_schema = schema_name
+        #sql = f"SET search_path TO {schema_name}"
+        #self.__execute_sql__(sql)
 
     def __execute_sql__(self, sql, fetch='none'):
         '''
@@ -121,6 +125,52 @@ class PgInterface():
         sql = 'SELECT version()'
         return self.__execute_sql__(sql, fetch='one')
     
+    def create_database(self, database_name):
+
+        self.l.info(f'create database {database_name}')
+        res = self.__execute_sql__(f"SELECT datname FROM pg_catalog.pg_database WHERE datname='{database_name}'",fetch="one")
+        if res == None:
+
+            con = self.get_connection()
+            con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+            cur = con.cursor()
+            try:
+                cur.execute(f"CREATE DATABASE {database_name}")
+            finally:
+                cur.close()
+                con.close()
+
+        else:
+
+            self.l.error(f'Database {database_name} already exists')
+
+    def drop_database(self, database_name):
+
+        self.l.info(f'drop database {database_name}')
+        res = self.__execute_sql__(f"SELECT datname FROM pg_catalog.pg_database WHERE datname='{database_name}'",fetch="one")
+        if res == None:
+
+            self.l.error(f'Database {database_name} can not be dropped as it does not exist')
+
+        else:
+
+            con = self.get_connection()
+            con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+            cur = con.cursor()
+            try:
+                cur.execute(f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname='{database_name}' AND pid<>pg_backend_pid();")
+                cur.execute(f"DROP DATABASE {database_name} WITH (FORCE);")
+            finally:
+                cur.close()
+                con.close()
+    
+    def get_database_list(self):
+
+        self.l.debug('get_database_list')
+
+        res = self.__execute_sql__('SELECT datname FROM pg_catalog.pg_database', fetch='all')
+        return [db[0] for db in res]
+
     def create_schema(self, schema_name, switch_to_schema = False):
         
         self.l.info(f'create schema {schema_name}')
@@ -129,12 +179,6 @@ class PgInterface():
         if switch_to_schema:
             self.switch_schema(schema_name)
 
-    def switch_schema(self, schema_name):
-
-        self.l.debug(f'Switch schema to {schema_name}')
-        sql = f"SET search_path TO {schema_name}"
-        self.__execute_sql__(sql)
-        
     def drop_schema(self, schema_name):
 
         self.l.info(f'drop schema {schema_name}')
@@ -142,11 +186,18 @@ class PgInterface():
         sql = f'DROP SCHEMA IF EXISTS {schema_name} CASCADE'
         self.__execute_sql__(sql)
 
+    def get_schema_list(self):
+
+        self.l.debug('get_schema_list')
+
+        res = self.__execute_sql__('SELECT schema_name FROM information_schema.schemata', fetch='all')
+        return [schema[0] for schema in res]
+
     def create_table(self, table_definition:TableDefinition, schema=None, if_not_exits=True):
         
         self.l.info(f'create table {table_definition.name}')
         if schema == None:
-            schema = 'public'
+            schema = self.current_schema
         field_string = ''
         
         for a_field_key in table_definition.field_definitions:
@@ -176,15 +227,22 @@ class PgInterface():
         self.l.debug(sql)
         self.__execute_sql__(sql, fetch='none')
 
+    def get_table_list(self, schema_name):
 
-    def insert_into_table(self, schema, table, key_list, value_list):
+        self.l.debug('get_table_list')
+        res = self.__execute_sql__(f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{schema_name}'", fetch='one')
+        return [table for table in res]
+
+    def insert_into_table(self, table, key_list, value_list, schema=None):
 
         self.l.info('insert into table {schema}.{table} ({})')
 
-        key_string = ','.join(key_list)
+        if schema == None:
 
-        
-        
+            schema = self.current_schema
+
+        key_string = ','.join(key_list)
+  
         value_string = ''
 
         for a_value_set in value_list:
