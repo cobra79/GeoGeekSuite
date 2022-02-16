@@ -9,13 +9,23 @@ class Jobregistry:
     '''
     Jobregistry
     '''
-    def __init__(self, download_folder='./downloads', host='postgres', database='postgres',user='postgres',password=None):
+    def __init__(self, download_folder=None, database=None, host=None,user=None,password=None):
         if password == None:
             password = os.environ['POSTGRES_PASSWORD']
+        if host == None:
+            host = os.environ['PGHOST']
+        if database == None:
+            database = os.environ['PGDATABASE']
+        self.database = database
+        if user == None:
+            user = os.environ['PGUSER']
         self.connection_string = f'host={host} dbname={database} user={user} password={password}'
-        self.download_folder = download_folder
+        if download_folder == None:
+            self.download_folder = os.environ['DOWNLOAD_FOLDER']
+        else:
+            self.download_folder = download_folder
         self.l = logging.Logger(self)
-        self.pg = pgi.PgInterface()
+        self.pg = pgi.PgInterface(database)
         self.init_database_structure()
 
     def __repr__(self):
@@ -77,7 +87,7 @@ class Jobregistry:
         
         dmf = fabric.DataModelFabric()
         job_dm = dmf.create_from_dict(job_dm_dict)
-        dm_man = pgi.DataModelManager()
+        dm_man = pgi.DataModelManager(database=self.database )
         dm_man.add_datamodel(job_dm)
         dm_man.apply_datamodel('jobs')
 
@@ -92,12 +102,13 @@ class Jobregistry:
         #Update Jobs
         keys = ['id','name','job_type','status','priority']
         values = [[job_id, job_name,'shape2pg','Waiting', str(priority)]]
-        self.pg.insert_into_table('jobs','jobs',keys, values)
+   
+        self.pg.insert_into_table(table='jobs',key_list=keys, value_list=values, schema='jobs')
 
         #Update shape2pg table
         keys = ['id','path_to_shape','skip_failures','target_schema']
         values = [[job_id, path_to_shape, str(skip_failures), schema]]
-        self.pg.insert_into_table('jobs','shape2pg',keys, values)  
+        self.pg.insert_into_table(table='shape2pg',key_list=keys, value_list=values, schema='jobs')  
 
     def create_osm2pg_job(self, path_to_osm, style, job_name=None, priority=42, schema='gis'):
 
@@ -110,12 +121,12 @@ class Jobregistry:
         #Update Jobs
         keys = ['id','name','job_type','status','priority']
         values = [[job_id, job_name,'osm2pg','Waiting', str(priority)]]
-        self.pg.insert_into_table('jobs','jobs',keys, values)
+        self.pg.insert_into_table(table='jobs', schema='jobs',key_list=keys, value_list=values)
 
         #Update shape2pg table
         keys = ['id','path_to_osm','style','target_schema']
         values = [[job_id, path_to_osm, style, schema]]
-        self.pg.insert_into_table('jobs','osm2pg',keys, values)
+        self.pg.insert_into_table(schema='jobs', table='osm2pg', key_list=keys, value_list=values)
 
     def create_pg2x_job(self, sql, format, filename, job_name=None, priority=42):
 
@@ -128,12 +139,12 @@ class Jobregistry:
         #Update Jobs
         keys = ['id','name','job_type','status','priority']
         values = [[job_id, job_name,'pg2x','Waiting', str(priority)]]
-        self.pg.insert_into_table('jobs','jobs',keys, values)
+        self.pg.insert_into_table(schema='jobs', table='jobs',key_list=keys, value_list=values)
 
         #Update shape2pg table
         keys = ['id','sql','format', 'filename']
         values = [[job_id, sql, format, filename]]
-        self.pg.insert_into_table('jobs','pg2x',keys, values)
+        self.pg.insert_into_table(schema='jobs', table='pg2x', key_list=keys, value_list=values)
 
     def get_jobs(self, job_type=None, status=None):
 

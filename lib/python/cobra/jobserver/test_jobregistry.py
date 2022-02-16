@@ -6,13 +6,20 @@ class TestJobregistry(unittest.TestCase):
 
     def test_class(self):
 
-        jr = jobregistry.Jobregistry()
-        self.assertEqual(jr.download_folder, './downloads')
+        test_db = 'test_ops'
+        i = pgi.PgInterface()
+        i.create_database(test_db)
+        jr = jobregistry.Jobregistry(download_folder = './download', database=test_db)
+        self.assertEqual(jr.download_folder, './download')
+        i.drop_database(test_db)
 
     def test_init(self):
 
-        jr = jobregistry.Jobregistry()
-        interface = pgi.PgInterface()
+        test_db = 'test_ops'
+        i = pgi.PgInterface()
+        i.create_database(test_db)
+        jr = jobregistry.Jobregistry(download_folder = './download', database=test_db)
+        interface = pgi.PgInterface(database=test_db)
         conn = interface.get_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM information_schema.tables WHERE table_schema = 'jobs'")
@@ -26,72 +33,73 @@ class TestJobregistry(unittest.TestCase):
 
         cur.close()
         conn.close()
+        i.drop_database(test_db)
 
     def test_shape2pg_job(self):
 
-        jr = jobregistry.Jobregistry()
-        interface = pgi.PgInterface()
+        test_db = 'testops'
         test_path = '/highway/to/test'
         test_name = 'Testjob'
 
-        #jr.create_shape2pg_job(path_to_shape, job_name=None, skip_failures=True, priority=42, schema='gis')
+        i = pgi.PgInterface()
+        i.create_database(test_db)
+
+        jr = jobregistry.Jobregistry(download_folder = './download', database=test_db)
+         
         jr.create_shape2pg_job(test_path, job_name=test_name)
 
-        conn = interface.get_connection()
-        cur = conn.cursor()
-        cur.execute(f"SELECT name FROM jobs.jobs WHERE name = '{test_name}'")
-        res = cur.fetchone()[0]
+        i_test =  pgi.PgInterface(test_db)
+        res = i_test.__execute_sql__(f"SELECT name FROM jobs.jobs WHERE name = '{test_name}'", fetch='one')
+        res = res[0]
 
         self.assertTrue(res == test_name)
 
-        cur.execute(f"SELECT id FROM jobs.jobs WHERE name = '{test_name}'")
-        id = cur.fetchone()[0]
+        id = i_test.__execute_sql__(f"SELECT id FROM jobs.jobs WHERE name = '{test_name}'", fetch='one')
+        id = id[0]      
 
-        cur.execute(f"SELECT * FROM jobs.shape2pg WHERE id = '{id}'")
-        res = cur.fetchone()
-
+        res = i_test.__execute_sql__(f"SELECT * FROM jobs.shape2pg WHERE id = '{id}'", fetch='one')
         self.assertEqual(res[1], test_path)
 
-        jr.delete_all_jobs()
-
-        cur.close()
-        conn.close()
-
+        i.drop_database(test_db)
+#
     def test_osm2pg_job(self):
 
-        jr = jobregistry.Jobregistry()
-        interface = pgi.PgInterface()
+        test_db = 'testops'
         osm_test_path = '/highway/to/osm'
         osm_test_name = 'OsmTestjob'
         style = 'test.style'
 
-        #jr.create_shape2pg_job(path_to_shape, job_name=None, skip_failures=True, priority=42, schema='gis')
+        i = pgi.PgInterface()
+        i.create_database(test_db)
+
+        jr = jobregistry.Jobregistry(download_folder = './download', database=test_db)
+        i_test =  pgi.PgInterface(test_db)
+        
         jr.create_osm2pg_job(osm_test_path, style, job_name=osm_test_name)
 
-        conn = interface.get_connection()
-        cur = conn.cursor()
-        cur.execute(f"SELECT name FROM jobs.jobs WHERE name = '{osm_test_name}'")
-        res = cur.fetchone()[0]
+        res = i_test.__execute_sql__(f"SELECT name FROM jobs.jobs WHERE name = '{osm_test_name}'", fetch='one')
+        res = res[0]
 
         self.assertTrue(res == osm_test_name)
 
-        cur.execute(f"SELECT id FROM jobs.jobs WHERE name = '{osm_test_name}'")
-        id = cur.fetchone()[0]
+        id = i_test.__execute_sql__(f"SELECT id FROM jobs.jobs WHERE name = '{osm_test_name}'", fetch='one')
+        id = id[0]
 
-        cur.execute(f"SELECT * FROM jobs.osm2pg WHERE id = '{id}'")
-        res = cur.fetchone()
+        res = i_test.__execute_sql__(f"SELECT * FROM jobs.osm2pg WHERE id = '{id}'", fetch='one')
 
         self.assertEqual(res[1], osm_test_path)
         self.assertEqual(res[2], style)
 
-        jr.delete_all_jobs()
-
-        cur.close()
-        conn.close()
+        i.drop_database(test_db)
 
     def test_get_jobs(self):
 
-        jr = jobregistry.Jobregistry()
+        test_db = 'testops'
+
+        i = pgi.PgInterface()
+        i.create_database(test_db)
+
+        jr = jobregistry.Jobregistry(download_folder = './download', database=test_db)
         jr.delete_all_jobs()
 
         jobs = jr.get_jobs()
@@ -107,5 +115,5 @@ class TestJobregistry(unittest.TestCase):
         
         self.assertEqual(len(jobs), 1)
 
-        jr.delete_all_jobs()
+        i.drop_database(test_db)
         

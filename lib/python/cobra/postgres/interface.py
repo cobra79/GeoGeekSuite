@@ -237,6 +237,8 @@ class PgInterface():
 
         self.l.info('insert into table {schema}.{table} ({})')
 
+        value_list = self._value_list_shape_correction_(value_list)
+
         if schema == None:
 
             schema = self.current_schema
@@ -260,6 +262,31 @@ class PgInterface():
 
         self.__execute_sql__(sql, fetch='none')
 
+    def _value_list_shape_correction_(self, value_list):
+
+        if len(value_list) > 0:
+
+            if type(value_list[0]) == list:
+
+                return value_list
+            
+            else:
+
+                return [value_list]
+        
+        else:
+
+            return [[]]
+
+    def table_row_count(self, table, schema=None):
+
+        if schema == None:
+
+            schema = self.current_schema
+
+        res = self.__execute_sql__(f'SELECT COUNT(*) FROM {schema}.{table}', fetch='one')
+        return res[0]
+
 class DataModelManager():
     
     '''
@@ -268,12 +295,15 @@ class DataModelManager():
     or remove tables from postgres
     '''
     
-    def __init__(self):
+    def __init__(self, database=None):
         
         self.l = logging.Logger(self)
         self.l.info('New DataModelManager')
         self.data_models = {}
-        self.db_interface = PgInterface()
+        if database == None:
+            self.db_interface = PgInterface()
+        else:
+            self.db_interface = PgInterface(database)
      
     def add_datamodel(self, datamodel:DataModelDefinition):
         
