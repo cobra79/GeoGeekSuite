@@ -26,7 +26,11 @@ class Osm2PgSql():
         self.l.debug("New osm2pgsql")
         self.busy = False
         
-        self.pg = pgi.PgInterface()
+        opsdatabase = os.environ['OPSDATABASE']
+        gisdatabase = os.environ['PGDATABASE']
+
+        self.pg_ops = pgi.PgInterface(opsdatabase)
+        self.pg_gis = pgi.PgInterface(gisdatabase)
 
         if run_in_loop:
             self._mainloop_()
@@ -70,7 +74,7 @@ class Osm2PgSql():
 
         self.l.silly('pick_a_job')
 
-        with self.pg.get_connection() as conn:
+        with self.pg_ops.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute("SELECT id, job_type FROM jobs.jobs WHERE status = 'Waiting' AND job_type = 'osm2pg' ORDER BY priority, date_created LIMIT 1")
                 result = curs.fetchone()
@@ -101,7 +105,7 @@ class Osm2PgSql():
 
         self.l.debug(f'update_job_status of {job_id}: Set to {new_status}')
         sql = f"UPDATE jobs.jobs SET status='{new_status}' WHERE id = '{job_id}'"
-        with self.pg.get_connection() as conn:
+        with self.pg_ops.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)
             
@@ -109,7 +113,7 @@ class Osm2PgSql():
 
         self.l.debug('Update Time')
         sql = f"UPDATE jobs.jobs SET {timefield}=now() WHERE id = '{job_id}'"
-        with self.pg.get_connection() as conn:
+        with self.pg_ops.get_connection() as conn:
             with conn.cursor() as curs:
                 curs.execute(sql)
     
@@ -120,7 +124,7 @@ class Osm2PgSql():
 
         self.busy = True
 
-        self.pg.create_schema(schema)
+        self.pg_gis.create_schema(schema)
 
         
         if os.path.isfile(path_to_pbf) == False:

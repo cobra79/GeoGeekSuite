@@ -23,13 +23,15 @@ spec:
             value: '5432'
           - name: PGDATABASE
             value: postgres
+          - name: OPSDATABASE
+            value: ops
           - name: PGUSER
             value: postgres
           - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
           - name: DOWNLOAD_FOLDER
             value: './download'
           - name: LOG_LEVEL

@@ -74,10 +74,20 @@ class PgInterface():
     def __init__(self, database='postgres', schema='public'):
         self.l = logging.Logger(self)
         self.database = database
-        self.password = os.environ['POSTGRES_PASSWORD']
+        self.password = os.environ['PGPASSWORD']
         self.current_schema = schema
+        if database != 'postgres':
+            self.create_db_when_required(database)
         self.conn_string = f"host='postgres' dbname='{self.database}' user='postgres' password='{self.password}'"
-    
+
+    def create_db_when_required(self, database):
+
+        self.conn_string = f"host='postgres' dbname='postgres' user='postgres' password='{self.password}'"
+        if database in self.get_database_list():
+            return
+        else:
+            self.create_database(database)
+
     def get_connection(self):
 
         self.l.silly('Provide PG connection')

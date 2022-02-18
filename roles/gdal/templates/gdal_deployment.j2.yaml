@@ -20,11 +20,24 @@ spec:
           image: '{{ repository }}/gdal:{{ image_version }}'
 {% endif %}
           env:
-          - name: POSTGRES_PASSWORD
+          ## PG Environment variables
+          - name: PGHOST
+            value: postgres
+          - name: PGPORT
+            value: '5432'
+          - name: PGDATABASE
+            value: postgres
+          - name: OPSDATABASE
+            value: ops
+          - name: PGUSER
+            value: postgres
+          - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
+          - name: DOWNLOAD_FOLDER
+            value: './download'
           - name: LOG_LEVEL
             value: SILLY
           - name: PYTHONPATH

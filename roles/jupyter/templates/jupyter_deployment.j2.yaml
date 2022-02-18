@@ -22,11 +22,11 @@ spec:
           env:
           - name: JUPYTER_ENABLE_LAB
             value: "yes"
-          - name: POSTGRES_PASSWORD
+          - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
           - name: PYTHONPATH
             value: /opt/cobra-python-packages
           - name: LOG_LEVEL
@@ -44,7 +44,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 8888

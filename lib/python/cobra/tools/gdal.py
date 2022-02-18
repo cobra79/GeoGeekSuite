@@ -13,18 +13,25 @@ class Gdal:
     The Gdal class impletments a process that is intended to run inside a container.
     Purpose is to pickup jobs (that require gdal) and execute them.
     '''
-    def __init__(self, download_folder='./downloads', host='postgres', database='postgres',user='postgres', schema=None, run_in_loop=False):
+    def __init__(self, download_folder=None, host=None,user=None, schema=None, run_in_loop=False):
         
         self.l = logging.Logger(self)
         
-        self.host = host
-        self.database = database
-        self.user = user
-        self.schema = schema
-            
-        self.download_folder = download_folder
+        password = os.environ['PGPASSWORD']
+        if host == None:
+            host = os.environ['PGHOST']
         
-        self.pg = pgi.PgInterface()
+        opsdatabase = os.environ['OPSDATABASE']
+        self.gisdatabase = os.environ['PGDATABASE']
+
+        if user == None:
+            user = os.environ['PGUSER']
+        self.gis_connection_string = f'host={host} dbname={self.gisdatabase} user={user} password={password}'
+        if download_folder == None:
+            self.download_folder = os.environ['DOWNLOAD_FOLDER']
+        else:
+            self.download_folder = download_folder
+        self.pg = pgi.PgInterface(opsdatabase)
         self.busy = False
         if run_in_loop:
             self._mainloop_()
@@ -35,14 +42,14 @@ class Gdal:
     def __str__(self):
         return "A wrapper for GDAL"
 
-    def get_connection_string(self):
+    def get_gis_db_connection_string(self):
 
-        password = os.environ['POSTGRES_PASSWORD']
+        password = os.environ['PGPASSWORD']
 
         if self.schema == None:
-            return f'host={self.host} dbname={self.database} user={self.user} password={password}'
+            return f'host={self.host} dbname={self.gisdatabase} user={self.user} password={password}'
         else:
-            return f'host={self.host} dbname={self.database} user={self.user} password={password} schemas={self.schema}'
+            return f'host={self.host} dbname={self.gisdatabase} user={self.user} password={password} schemas={self.schema}'
         
 
     def _mainloop_(self):
@@ -127,7 +134,7 @@ class Gdal:
         self.busy = True
 
         try:
-            connection_string = self.get_connection_string()
+            connection_string = self.gis_connection_string
             args = ['ogr2ogr', '-f', format, f'/export/{filename}', f'PG: {connection_string}', '-sql', sql ]
             return_value = subprocess.run(args)
 
@@ -166,7 +173,7 @@ class Gdal:
             return 
 
         try:
-            connection_string = self.get_connection_string()
+            connection_string = self.gis_connection_string
             args =['ogr2ogr','-f','PostgreSQL',f'PG: {connection_string}', '-lco', f'SCHEMA={self.schema}', path_to_shape]
             if skip_failures:
                 args.append('-skipfailures')

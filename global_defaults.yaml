@@ -1,6 +1,6 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-031
+image_version: dev-0.0.1-032
 python:
   pip_common:
   - psycopg2-binary

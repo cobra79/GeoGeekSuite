@@ -20,11 +20,11 @@ spec:
           image: '{{ repository }}/osm2pgsql:{{ image_version }}'
 {% endif %}
           env:
-          - name: POSTGRES_PASSWORD
+          - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
           - name: LOG_LEVEL
             value: DEBUG
           - name: PYTHONPATH
@@ -42,7 +42,11 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pg-secret
-                key: POSTGRES_PASSWORD
+                key: PGPASSWORD
+          - name: OPSDATABASE
+            value: ops
+          - name: DOWNLOAD_FOLDER
+            value: './download'
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 80

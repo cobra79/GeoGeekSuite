@@ -11,11 +11,11 @@ class Jobregistry:
     '''
     def __init__(self, download_folder=None, database=None, host=None,user=None,password=None):
         if password == None:
-            password = os.environ['POSTGRES_PASSWORD']
+            password = os.environ['PGPASSWORD']
         if host == None:
             host = os.environ['PGHOST']
         if database == None:
-            database = os.environ['PGDATABASE']
+            database = os.environ['OPSDATABASE']
         self.database = database
         if user == None:
             user = os.environ['PGUSER']
