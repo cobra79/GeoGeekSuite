@@ -2,6 +2,7 @@ import psycopg2
 import os
 import cobra.helper.logging as logging
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+# import geopandas as gpd
 
 class FieldDefinition():
     '''
@@ -19,6 +20,7 @@ class FieldDefinition():
     
     def __str__(self):
         return f'FieldDefinition -name: {self.name}, type: {self.type}'
+
 
 class TableDefinition():
     '''
@@ -79,6 +81,7 @@ class PgInterface():
         if database != 'postgres':
             self.create_db_when_required(database)
         self.conn_string = f"host='postgres' dbname='{self.database}' user='postgres' password='{self.password}'"
+        self.check_extensions()
 
     def create_db_when_required(self, database):
 
@@ -92,6 +95,17 @@ class PgInterface():
 
         self.l.silly('Provide PG connection')
         return psycopg2.connect(self.conn_string)
+
+    def check_extensions(self):
+        
+        self.l.debug('check_extensions')
+        extensions_to_install = ['postgis','pgrouting']
+
+        for an_ext in extensions_to_install:
+
+            sql = f'CREATE EXTENSION IF NOT EXISTS {an_ext}'
+            self.__execute_sql__(sql)
+
 
     def switch_schema(self, schema_name):
 
@@ -296,6 +310,15 @@ class PgInterface():
 
         res = self.__execute_sql__(f'SELECT COUNT(*) FROM {schema}.{table}', fetch='one')
         return res[0]
+
+#    def get_gdf(self, sql):
+#
+#        self.l.debug('get_gdf')
+#        conn = self.get_connection()
+#        res = gpd.GeoDataFrame.from_postgis(sql, conn)
+#        conn.close()
+#        return res
+
 
 class DataModelManager():
     

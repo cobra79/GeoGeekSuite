@@ -8,3 +8,5 @@ data:
   POSTGRES_DB: {{ geodatabase.dbname }}
   POSTGRES_USER: {{ geodatabase.dbadmin }}
   PGPASSWORD: {{ geodatabase.dbpw }}
+  POSTGRES_PASS: {{ geodatabase.dbpw }}
+  POSTGRES_DBNAME: {{ geodatabase.dbname }}

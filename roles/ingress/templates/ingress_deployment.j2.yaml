@@ -111,3 +111,22 @@ spec:
             name: webhoster
             port:
               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: 'ingres-postgres-{{ item }}'
+  annotations:
+    kubernetes.io/ingress.class: "{{ ingress_class }}"
+spec:
+  rules:
+  - host: 'postgres.{{ item }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: postgres
+            port:
+              number: 5432

@@ -1,6 +1,6 @@
 gisnamespace: gis
 k8s_flavour: microk8s
-image_version: dev-0.0.1-032
+image_version: dev-0.0.1-033
 python:
   pip_common:
   - psycopg2-binary
@@ -19,8 +19,8 @@ geodatabase:
   dbadmin: postgres
   dbpw: '{{ password }}'
   dbpwe: '{{ password | b64encode }}'
-  container_image: postgis/postgis # postgres
-  container_version: 13-3.1-alpine  # 10.4
+  container_image: kartoza/postgis
+  container_version: 14-3.2
   pgadmin:
     container_image: dpage/pgadmin4
     container_version: '4.30'
